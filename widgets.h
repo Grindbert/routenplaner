@@ -13,6 +13,7 @@
 #include <QNetworkReply>
 #include <QUrl>
 #include <QPixmap>
+#include <QGraphicsScene>
 
 
 class Widgets : public QWidget
@@ -25,9 +26,9 @@ class Widgets : public QWidget
 	QGridLayout *gridLayout;
 	QGraphicsView *graphicsView;
 
-	QNetworkAccessManager meinManager;
+	/*QNetworkAccessManager meinManager;
 	QNetworkRequest meinReq;
-	QNetworkReply *meinReply;
+	QNetworkReply *meinReply;*/
 
 
 	public:
@@ -40,7 +41,7 @@ class Widgets : public QWidget
 	public slots:
 
 	private slots:
-	void requestFertig(QPixmap*);
+	//void requestFertig(QPixmap*);
 
 
 	};

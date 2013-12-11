@@ -11,14 +11,18 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	qdial->setNotchesVisible(true);
 	qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
 
-
-	meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
+	/*meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
 	meinReply=meinManager.get(meinReq);
 	QPixmap *meinePixmap;
-	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig(meinePixmap)));
+	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig(meinePixmap)));*/
 
+	QPixmap meinePixmap;
+	meinePixmap.load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
 
-	graphicsView = new QGraphicsView;
+	QGraphicsScene *meineSzene = new QGraphicsScene;
+	meineSzene->addPixmap(meinePixmap);
+
+	graphicsView = new QGraphicsView(meineSzene);
 
 	gridLayout = new QGridLayout(this);
 	gridLayout->addWidget(maxWertButton, 0, 0);
@@ -32,8 +36,8 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	qdial->setValue(50);
 	}
 
-void Widgets::requestFertig(QPixmap *meinePixmap)
+/*void Widgets::requestFertig(QPixmap *meinePixmap)
 	{
 	QByteArray content = meinReply->readAll();
 	meinePixmap->loadFromData(content);
-	}
+	}*/
