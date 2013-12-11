@@ -9,7 +9,10 @@
 #include <QStatusBar>
 #include <widgets.h>
 #include <QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QUrl>
+
 
 
 class MainWindow : public QMainWindow
@@ -19,8 +22,9 @@ class MainWindow : public QMainWindow
 	QLabel* statusLabel;
 	Widgets* widget;
 
-	QNetworkAccessManager meinManager;//=new QNetworkAccessManager(this);
+	QNetworkAccessManager meinManager;
 	QNetworkRequest meinReq;
+	QNetworkReply *meinReply;
 
 	public:
 	MainWindow(QWidget *parent = 0);
@@ -29,6 +33,9 @@ class MainWindow : public QMainWindow
 	private:
 	void menuAnlegen();
 	void statuszeileAnlegen();
+
+	private slots:
+	void requestFertig();
 	};
 
 #endif // MAINWINDOW_H
