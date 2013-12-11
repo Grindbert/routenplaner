@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	menuAnlegen();
 	statuszeileAnlegen();
 	//connect(widget->getZeichenflaeche(), SIGNAL(radiusChanged(int)), this, SLOT(statuszeileAktualisieren(int)));
-	meinManager=new QNetworkAccessManager(this);
+	//meinManager=new QNetworkAccessManager(this);
 	}
 
 MainWindow::~MainWindow()

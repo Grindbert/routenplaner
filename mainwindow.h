@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
 	QLabel* statusLabel;
 	Widgets* widget;
 
-	QNetworkAccessManager *meinManager;
+	//QNetworkAccessManager *meinManager=new QNetworkAccessManager(this);
 	//QNetworkRequest meinReq;
 
 	public:
