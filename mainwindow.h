@@ -8,11 +8,8 @@
 #include <QLabel>
 #include <QStatusBar>
 #include <widgets.h>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/qnetworkaccessmanager.h>
+#include <QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/qnetworkrequest.h>
-
 
 
 class MainWindow : public QMainWindow
@@ -22,8 +19,8 @@ class MainWindow : public QMainWindow
 	QLabel* statusLabel;
 	Widgets* widget;
 
-	//QNetworkAccessManager *meinManager=new QNetworkAccessManager(this);
-	//QNetworkRequest meinReq;
+	QNetworkAccessManager meinManager;//=new QNetworkAccessManager(this);
+	QNetworkRequest meinReq;
 
 	public:
 	MainWindow(QWidget *parent = 0);
