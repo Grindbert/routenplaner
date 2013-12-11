@@ -14,6 +14,8 @@
 #include <QUrl>
 #include <QPixmap>
 #include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QPoint>
 
 
 class Widgets : public QWidget
