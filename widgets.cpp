@@ -6,11 +6,19 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	qdial=new QDial;
 	qspinbox=new QSpinBox;
 	maxWertButton = new QPushButton("100%");
-	graphicsView = new QGraphicsView;
 
 	maxWertButton->setFont(QFont("Helvetica", 16, QFont::Normal));
 	qdial->setNotchesVisible(true);
 	qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
+
+
+	meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
+	meinReply=meinManager.get(meinReq);
+	QPixmap *meinePixmap;
+	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig(meinePixmap)));
+
+
+	graphicsView = new QGraphicsView;
 
 	gridLayout = new QGridLayout(this);
 	gridLayout->addWidget(maxWertButton, 0, 0);
@@ -22,4 +30,10 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->setColumnStretch(1, 10);
 	setLayout(gridLayout);
 	qdial->setValue(50);
+	}
+
+void Widgets::requestFertig(QPixmap *meinePixmap)
+	{
+	QByteArray content = meinReply->readAll();
+	meinePixmap->loadFromData(content);
 	}

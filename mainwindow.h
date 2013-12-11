@@ -22,9 +22,9 @@ class MainWindow : public QMainWindow
 	QLabel* statusLabel;
 	Widgets* widget;
 
-	QNetworkAccessManager meinManager;
+	/*QNetworkAccessManager meinManager;
 	QNetworkRequest meinReq;
-	QNetworkReply *meinReply;
+	QNetworkReply *meinReply;*/
 
 	public:
 	MainWindow(QWidget *parent = 0);
@@ -34,8 +34,8 @@ class MainWindow : public QMainWindow
 	void menuAnlegen();
 	void statuszeileAnlegen();
 
-	private slots:
-	void requestFertig();
+	/*private slots:
+	void requestFertig();*/
 	};
 
 #endif // MAINWINDOW_H

@@ -12,9 +12,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	statuszeileAnlegen();
 	//connect(widget->getZeichenflaeche(), SIGNAL(radiusChanged(int)), this, SLOT(statuszeileAktualisieren(int)));
 
-	meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
-	meinReply=meinManager->get(meinReq);
-	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig()));
+	/*meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
+	meinReply=meinManager.get(meinReq);
+	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig()));*/
 	}
 
 MainWindow::~MainWindow()
@@ -44,9 +44,9 @@ void MainWindow::statuszeileAnlegen()
 	statusBar()->addWidget(statusLabel);
 	}
 
-void MainWindow::requestFertig()
+/*void MainWindow::requestFertig()
 	{
 	QByteArray content = meinReply->readAll();
 	QPixmap meinePixmap;
 	meinePixmap.loadFromData(content);
-	}
+	}*/
