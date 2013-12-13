@@ -16,7 +16,7 @@ class Downloader : public QObject
 {
 	Q_OBJECT
 
-	QNetworkAccessManager meinManager;
+	QNetworkAccessManager *meinManager;
 	QNetworkRequest meinReq;
 	//meinReq.setUrl(QUrl("Platzhalter"));
 	QNetworkReply *meinReply;
@@ -24,7 +24,6 @@ class Downloader : public QObject
 	std::string url;
 	//QString url;
 	std::stringstream ss;
-
 
 
 	public:
@@ -37,6 +36,7 @@ class Downloader : public QObject
 
 	public slots:
 
+	//void fortsetzung(QNetworkReply *rep);
 	void fortsetzung();
 	};
 

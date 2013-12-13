@@ -18,17 +18,6 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->addWidget(qdial, 2, 0);
 
 
-
-
-
-
-	/*meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
-	meinReply=meinManager.get(meinReq);
-	QPixmap *meinePixmap;
-	connect(meinReply, SIGNAL(finished()),this,SLOT(requestFertig()));
-	*/
-
-
 	Downloader meinDownl;
 	meinDownl.ladeKachel(12,2200,1312);
 
@@ -64,9 +53,3 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	setLayout(gridLayout);
 	qdial->setValue(50);
 	}
-
-/*void Widgets::requestFertig(QPixmap *meinePixmap)
-	{
-	QByteArray content = meinReply->readAll();
-	meinePixmap->loadFromData(content);
-	}*/
