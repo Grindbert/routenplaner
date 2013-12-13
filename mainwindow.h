@@ -7,12 +7,8 @@
 #include <QMenuBar>
 #include <QLabel>
 #include <QStatusBar>
-#include <widgets.h>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
 
+#include "widgets.h"
 
 
 class MainWindow : public QMainWindow
@@ -22,10 +18,6 @@ class MainWindow : public QMainWindow
 	QLabel* statusLabel;
 	Widgets* widget;
 
-	/*QNetworkAccessManager meinManager;
-	QNetworkRequest meinReq;
-	QNetworkReply *meinReply;*/
-
 	public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
@@ -34,8 +26,7 @@ class MainWindow : public QMainWindow
 	void menuAnlegen();
 	void statuszeileAnlegen();
 
-	/*private slots:
-	void requestFertig();*/
+	//private slots:
 	};
 
 #endif // MAINWINDOW_H

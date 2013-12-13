@@ -15,7 +15,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    widgets.cpp
+    widgets.cpp \
+    downloader.cpp
 
 HEADERS  += mainwindow.h \
-    widgets.h
+    widgets.h \
+    downloader.h

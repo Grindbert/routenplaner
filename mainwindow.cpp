@@ -11,10 +11,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	menuAnlegen();
 	statuszeileAnlegen();
 	//connect(widget->getZeichenflaeche(), SIGNAL(radiusChanged(int)), this, SLOT(statuszeileAktualisieren(int)));
-
-	/*meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
-	meinReply=meinManager.get(meinReq);
-	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig()));*/
 	}
 
 MainWindow::~MainWindow()
@@ -22,13 +18,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::menuAnlegen()
 	{
-	//Beenden-Button:
+	//Datei-Menü:
 	fileMenu = menuBar()->addMenu(tr("&Datei"));
+
+	//Graph-laden-Button:
 	QAction *ladeGraph = new QAction(tr("&Graph laden"), this);
 	ladeGraph->setShortcut(tr("Ctrl+L"));
 	ladeGraph->setStatusTip(tr("lies Graph von Textdatei ein"));
 	fileMenu->addAction(ladeGraph);
 
+	//Beenden-Button:
 	QAction *quitAction = new QAction(tr("&Beenden"), this);
 	quitAction->setShortcut(tr("Ctrl+T"));
 	quitAction->setStatusTip(tr("Programm beenden"));
@@ -43,10 +42,3 @@ void MainWindow::statuszeileAnlegen()
 	statusLabel = new QLabel("nicht bewegt");
 	statusBar()->addWidget(statusLabel);
 	}
-
-/*void MainWindow::requestFertig()
-	{
-	QByteArray content = meinReply->readAll();
-	QPixmap meinePixmap;
-	meinePixmap.loadFromData(content);
-	}*/

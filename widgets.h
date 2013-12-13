@@ -8,10 +8,6 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QGraphicsView>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QUrl>
 #include <QPixmap>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -28,11 +24,6 @@ class Widgets : public QWidget
 	QGridLayout *gridLayout;
 	QGraphicsView *graphicsView;
 
-	/*QNetworkAccessManager meinManager;
-	QNetworkRequest meinReq;
-	QNetworkReply *meinReply;*/
-
-
 	public:
 	explicit Widgets(QMainWindow *parent = 0);
 
@@ -43,7 +34,6 @@ class Widgets : public QWidget
 	public slots:
 
 	private slots:
-	//void requestFertig(QPixmap*);
 
 
 	};

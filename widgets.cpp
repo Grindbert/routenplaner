@@ -1,5 +1,6 @@
 #include <QFont>
 #include "widgets.h"
+#include "downloader.h"
 
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
@@ -24,12 +25,20 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	/*meinReq.setUrl(QUrl("http://tile.openstreetmap.org/12/2200/1312.png"));
 	meinReply=meinManager.get(meinReq);
 	QPixmap *meinePixmap;
-	connect((const QObject*)meinReply, SIGNAL(finished()),this,SLOT(requestFertig(meinePixmap)));*/
+	connect(meinReply, SIGNAL(finished()),this,SLOT(requestFertig()));
+	*/
 
-	QPixmap meinePixmap;
-	meinePixmap.load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
+
+	Downloader meinDownl;
+	meinDownl.ladeKachel(12,2200,1312);
+
 
 	QGraphicsScene *meineSzene = new QGraphicsScene;
+
+	QPixmap meinePixmap=meinDownl.getPixmap();
+	//meinePixmap.load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
+
+
 
 	QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
 	item=meineSzene->addPixmap(meinePixmap);
@@ -37,13 +46,15 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	item->setOffset(QPoint(0,-256));
 
 
-	QPixmap meinePixmap2;
+	/*QPixmap meinePixmap2;
 	meinePixmap2.load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1313.png"));
 
 	QGraphicsPixmapItem *item2 = new QGraphicsPixmapItem;
 	item2 = meineSzene->addPixmap(meinePixmap2);
 
 
+	/*QPixmap bla = ladeKachel(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
+	meineSzene->addPixmap(bla);*/
 
 	graphicsView = new QGraphicsView(meineSzene);
 
