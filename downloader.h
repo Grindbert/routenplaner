@@ -6,6 +6,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
+#include <QByteArray>
 #include <QPixmap>
 #include <QPoint>
 #include <string>
@@ -16,11 +17,11 @@ class Downloader : public QObject
 {
 	Q_OBJECT
 
-	QNetworkAccessManager *meinManager;
+	QNetworkAccessManager meinManager;
 	QNetworkRequest meinReq;
-	//meinReq.setUrl(QUrl("Platzhalter"));
 	QNetworkReply *meinReply;
 	QPixmap *meinePixmap;
+	QByteArray daten;
 	std::string url;
 	//QString url;
 	std::stringstream ss;
@@ -28,16 +29,17 @@ class Downloader : public QObject
 
 	public:
 	explicit Downloader(QObject *parent = 0);
+	virtual ~Downloader();
 	QPixmap getPixmap();
 	void ladeKachel(int, int, int);
 
 
 	signals:
+	void downloaded();
 
 	public slots:
-
-	//void fortsetzung(QNetworkReply *rep);
-	void fortsetzung();
+	void fortsetzung(QNetworkReply *rep);
+	//void fortsetzung();
 	};
 
 #endif // DOWNLOADER_H

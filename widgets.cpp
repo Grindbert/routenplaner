@@ -24,15 +24,25 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 
 	QGraphicsScene *meineSzene = new QGraphicsScene;
 
-	QPixmap meinePixmap=meinDownl.getPixmap();
-	//meinePixmap.load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
-
-
+	/*QPixmap *meinePixmap = new QPixmap;//=meinDownl.getPixmap();
 
 	QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
-	item=meineSzene->addPixmap(meinePixmap);
+	item=meineSzene->addPixmap(*meinePixmap);
 
-	item->setOffset(QPoint(0,-256));
+
+	QPixmap *meinePixmap2 = new QPixmap;
+	meinePixmap2->load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
+	*/
+
+	//QGraphicsPixmapItem *item2 = new QGraphicsPixmapItem((const QPixmap&)meinePixmap2);
+
+	//*item=*item2;
+
+	//item->setPixmap((const QPixmap&)meinePixmap2);
+
+	//meineSzene->addItem(item2);
+
+	//item->setOffset(QPoint(0,-256));
 
 
 	/*QPixmap meinePixmap2;
@@ -42,10 +52,12 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	item2 = meineSzene->addPixmap(meinePixmap2);
 
 
-	/*QPixmap bla = ladeKachel(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
+	QPixmap bla = ladeKachel(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
 	meineSzene->addPixmap(bla);*/
 
 	graphicsView = new QGraphicsView(meineSzene);
+
+	graphicsView->scene();
 
 	gridLayout->addWidget(graphicsView, 0,1,3,1);
 

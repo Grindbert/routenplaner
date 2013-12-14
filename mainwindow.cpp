@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "widgets.h"
+#include "downloader.h"
 #include <QAction>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -10,11 +11,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	setCentralWidget(widget);
 	menuAnlegen();
 	statuszeileAnlegen();
+	//starteKarte();
 	//connect(widget->getZeichenflaeche(), SIGNAL(radiusChanged(int)), this, SLOT(statuszeileAktualisieren(int)));
 	}
 
 MainWindow::~MainWindow()
 	{}
+
+
+void MainWindow::starteKarte()
+	{
+	//Downloader meinDownl;
+	//meinDownl.ladeKachel(12,2200,1312);
+	}
+
+
+
+
 
 void MainWindow::menuAnlegen()
 	{
