@@ -14,16 +14,15 @@
 #include <QString>
 
 class Downloader : public QObject
-{
+	{
 	Q_OBJECT
 
-	QNetworkAccessManager meinManager;
+	QNetworkAccessManager *meinManager;
 	QNetworkRequest meinReq;
 	QNetworkReply *meinReply;
 	QPixmap *meinePixmap;
 	QByteArray daten;
 	std::string url;
-	//QString url;
 	std::stringstream ss;
 
 
@@ -35,12 +34,42 @@ class Downloader : public QObject
 
 
 	signals:
-	void downloaded();
+	void gedownloaded();
 
 	public slots:
 	void fortsetzung(QNetworkReply *rep);
-	//void fortsetzung();
 	};
+
+
+
+class FileDownloader : public QObject
+	{
+	Q_OBJECT
+
+	QNetworkAccessManager meinManager;
+	QPixmap meinePixmap;
+	std::string url;
+	std::stringstream ss;
+
+
+	public:
+	explicit FileDownloader(QObject *parent = 0);
+	virtual ~FileDownloader();
+
+	void ladeKachel(int, int, int);
+	QPixmap getPixmap();
+
+
+	signals:
+	void downloaded();
+
+	private slots:
+	void fileDownloaded(QNetworkReply* pReply);
+
+	private:
+
+	};
+
 
 #endif // DOWNLOADER_H
 

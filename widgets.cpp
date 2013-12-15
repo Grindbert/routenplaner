@@ -1,6 +1,8 @@
 #include <QFont>
 #include "widgets.h"
 #include "downloader.h"
+#include <QUrl>
+#include <unistd.h>	//für das usleep
 
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
@@ -18,19 +20,28 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->addWidget(qdial, 2, 0);
 
 
-	Downloader meinDownl;
-	meinDownl.ladeKachel(12,2200,1312);
+	//QUrl imageUrl("http://qt.digia.com/Documents/1/QtLogo.png");
+	FileDownloader *m_pImgCtrl = new FileDownloader(/*imageUrl,*/ this);
+	m_pImgCtrl->ladeKachel(12,2200,1312);
+
+	usleep(10000000);
+
+
+	//Downloader meinDownl;
+	//meinDownl.ladeKachel(12,2200,1312);
 
 
 	QGraphicsScene *meineSzene = new QGraphicsScene;
 
-	/*QPixmap *meinePixmap = new QPixmap;//=meinDownl.getPixmap();
+	QPixmap *meinePixmap = new QPixmap;//=meinDownl.getPixmap();
+
+	*meinePixmap=m_pImgCtrl->getPixmap();
 
 	QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
 	item=meineSzene->addPixmap(*meinePixmap);
 
 
-	QPixmap *meinePixmap2 = new QPixmap;
+	/*QPixmap *meinePixmap2 = new QPixmap;
 	meinePixmap2->load(QString("/media/grindbert/Aeneon/Basti_C++/Route/12-2200-1312.png"));
 	*/
 
@@ -57,7 +68,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 
 	graphicsView = new QGraphicsView(meineSzene);
 
-	graphicsView->scene();
+	//graphicsView->scene();
 
 	gridLayout->addWidget(graphicsView, 0,1,3,1);
 
