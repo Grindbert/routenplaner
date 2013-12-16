@@ -8,9 +8,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QGraphicsView>
-//#include <QPixmap>
 #include <QGraphicsScene>
-//#include <QGraphicsPixmapItem>
 #include <QPoint>
 #include <QFont>
 

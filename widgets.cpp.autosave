@@ -1,5 +1,4 @@
 #include "widgets.h"
-//#include "downloader.h"
 
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{

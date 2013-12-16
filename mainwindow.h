@@ -7,6 +7,8 @@
 #include <QMenuBar>
 #include <QLabel>
 #include <QStatusBar>
+#include <vector>
+#include <QGraphicsPixmapItem>
 
 #include "widgets.h"
 
@@ -17,18 +19,20 @@ class MainWindow : public QMainWindow
 	QMenu* fileMenu;
 	QLabel* statusLabel;
 	Widgets* widget;
+	QGraphicsScene *szene;
+	std::vector<QGraphicsPixmapItem*> kacheln;
 
 	public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
-	void starteKarte();
-
 	private:
 	void menuAnlegen();
 	void statuszeileAnlegen();
+	void starteKarte();
 
-	//private slots:
+	private slots:
+	void pixmapAdden(QPixmap, int);
 	};
 
 #endif // MAINWINDOW_H
