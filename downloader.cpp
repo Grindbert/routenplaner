@@ -16,11 +16,15 @@ void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 	stelleInSzene=stelleInSzeneEingabe;
 
 	//url zusammenbasteln:
-	ss<<url<<z<<"/"<<x<<"/"<<y<<".png";
-	url=ss.str();
+	//ss<<url<<z<<"/"<<x<<"/"<<y<<".png";
+	//url=ss.str();
+
+	QString test = "http://tile.openstreetmap.org/";
+	test = test + QString::number(z) + "/" + QString::number(x) + "/" + QString::number(y) + ".png";
 
 	//Kachel runterladen:
-	meinManager.get(QNetworkRequest(QUrl(url.c_str())));
+	//meinManager.get(QNetworkRequest(QUrl(url.c_str())));
+	meinManager.get(QNetworkRequest(QUrl(test)));
 	}
 
 void Downloader::fileDownloaded(QNetworkReply* pReply)
