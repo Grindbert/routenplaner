@@ -3,9 +3,8 @@
 Downloader::Downloader(QObject *parent) :
 	QObject(parent)
 	{
-	meinePixmap=new QPixmap;
+	meinePixmap=new QPixmap;	//meinePixmap initialisieren... oder deklarieren??
 	connect(&meinManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
-	url ="http://tile.openstreetmap.org/";
 	}
 
 Downloader::~Downloader()
@@ -15,16 +14,16 @@ void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 	{
 	stelleInSzene=stelleInSzeneEingabe;
 
-	//url zusammenbasteln:
-	//ss<<url<<z<<"/"<<x<<"/"<<y<<".png";
-	//url=ss.str();
-
-	QString test = "http://tile.openstreetmap.org/";
-	test = test + QString::number(z) + "/" + QString::number(x) + "/" + QString::number(y) + ".png";
+	//Url für die angefragte Kachel zusammenbauen:
+	QString url = "http://tile.openstreetmap.org/" + QString::number(z)
+			+ "/" + QString::number(x) + "/" + QString::number(y) + ".png";
 
 	//Kachel runterladen:
-	//meinManager.get(QNetworkRequest(QUrl(url.c_str())));
-	meinManager.get(QNetworkRequest(QUrl(test)));
+	meinManager.get(QNetworkRequest(QUrl(url)));
+
+	//wenn fertig mit ladeKachel, wird gleich mit fileDownloaded 3 Zeilen weiter
+	//unten weitergemacht
+	//(siehe connect im Konstruktor)
 	}
 
 void Downloader::fileDownloaded(QNetworkReply* pReply)

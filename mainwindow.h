@@ -18,16 +18,18 @@
 class MainWindow : public QMainWindow
 	{
 	Q_OBJECT
-	QMenu* fileMenu;
-	QLabel* statusLabel;
-	Widgets* widget;
-	QGraphicsScene *szene;
-	std::vector<QGraphicsPixmapItem*> kacheln;
+	QMenu* fileMenu;	//Menüleiste
+	QLabel* statusLabel;	//kommt in die Statuszeile
+	Widgets* widget;	//Widgetcontainer
+	QGraphicsScene *szene;	//Zeiger auf die Szene im Graphics View
+	std::vector<QGraphicsPixmapItem*> kacheln;	//speichert Zeiger
+				//auf die Pixmaps, die als QGrahicsPixmapItem in die
+				//Szene getan werden
+	std::vector<QPixmap> pixmaps;
 
-	int zaehler;
-
-	std::vector<Downloader*> downl;
-	int zoom, xkoord, ykoord;
+	std::vector<Downloader*> downl;	//Downloader für die Kacheln
+	int zoom, xkoord, ykoord;	//speichert aktuelle Zoomstufe,
+			//x- und y-Nummern der Kacheln
 
 	public:
 	MainWindow(QWidget *parent = 0);
@@ -38,11 +40,8 @@ class MainWindow : public QMainWindow
 	void statuszeileAnlegen();
 	void starteKarte(int, int, int);
 	void setzeKarteNeu(int, int, int);
-	void wheelEvent(QWheelEvent *event);
 	//bool eventFilter(QObject *, QEvent *);
 
-	bool hilfe;
-	int hilfszaehler;
 
 	private slots:
 	void pixmapAdden(QPixmap, int);
@@ -52,6 +51,17 @@ class MainWindow : public QMainWindow
 	void geheWesten();
 	void zoomIn();
 	void zoomOut();
+	void mousePressEvent(QMouseEvent*);
+
+	void testSlot();
+
+	//irgendwelche Hilfsvariablen, die noch weg sollen,
+	//aber zentral an einer Stelle stehen sollen
+	public:
+	int zaehler;
+	bool hilfe;
+	int hilfszaehler;
+
 	};
 
 #endif // MAINWINDOW_H

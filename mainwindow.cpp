@@ -6,44 +6,53 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	{
+	//Hilfsvariablen setzen:
 	zaehler=0;
+	hilfe=true;
+	hilfszaehler=0;
 
 	//Fenster anlegen:
 	setAttribute(Qt::WA_DeleteOnClose);
-	setGeometry(100, 100, 800, 600);
+	setGeometry(100, 100, 800, 600);	//Größe und Ort des "aufpoppens" festlegen
 
 	//Widgets anlegen und im Fenster zentrieren:
-	widget = new Widgets(this);
+	widget = new Widgets(this);	//Widgetcontainer anlegen
 	setCentralWidget(widget);
 	szene=widget->getSzene();	//Zeiger auf die graphicsScene holen
-
-	//szene->setDragMode(QGraphicsView::ScrollHandDrag);
 
 	menuAnlegen();
 	statuszeileAnlegen();
 
+	//alle Vektoren, die für die Kacheln sind, auf Länge 9 setzen:
+	kacheln.resize(9);
+	pixmaps.resize(9);
 	downl.resize(9);
-	for(int i = 0; i<9; i++)
-		{
+	for(int i = 0; i<9; i++)		//die 9 Downloader (einer für jede
+		{							//Kachel einen) anlegen
 		downl[i]=new Downloader;
 		}
 
-	//Karte vom Startpunkt laden:
-	hilfe=true;
-	hilfszaehler=0;
+	//Punkt, auf den die Karte beim Starten gesetzt wird, definieren:
 	zoom=12;
 	xkoord=2200;
 	ykoord=1313;
-	kacheln.resize(9);
+
+	//Karte vom Startpunkt laden:
 	starteKarte(zoom, xkoord, ykoord);
 
+	//Buttons und Zeug aus dem Widgetcontainer mit Funktionen connecten:
+	connect(widget->getButton(0), SIGNAL(clicked()), this, SLOT(geheNorden()));
+	connect(widget->getButton(1), SIGNAL(clicked()), this, SLOT(geheSueden()));
+	connect(widget->getButton(2), SIGNAL(clicked()), this, SLOT(geheOsten()));
+	connect(widget->getButton(3), SIGNAL(clicked()), this, SLOT(geheWesten()));
+	connect(widget->getButton(4), SIGNAL(clicked()), this, SLOT(zoomIn()));
+	connect(widget->getButton(5), SIGNAL(clicked()), this, SLOT(zoomOut()));
+	connect(widget->getButton(6), SIGNAL(clicked()), this, SLOT(testSlot()));
 
-	connect(widget->nord, SIGNAL(clicked()), this, SLOT(geheNorden()));
-	connect(widget->sued, SIGNAL(clicked()), this, SLOT(geheSueden()));
-	connect(widget->ost, SIGNAL(clicked()), this, SLOT(geheOsten()));
-	connect(widget->west, SIGNAL(clicked()), this, SLOT(geheWesten()));
-	connect(widget->zoomInButton, SIGNAL(clicked()), this, SLOT(zoomIn()));
-	connect(widget->zoomOutButton, SIGNAL(clicked()), this, SLOT(zoomOut()));
+	connect(widget->getView(), SIGNAL(zoomInSignal()), this, SLOT(zoomIn()));
+	connect(widget->getView(), SIGNAL(zoomOutSignal()), this, SLOT(zoomOut()));
+
+	//widget->getView()->viewport()->installEventFilter(this);
 	}
 
 
@@ -51,6 +60,8 @@ MainWindow::~MainWindow()
 	{}
 
 
+//Karte am Startpunkt laden, und Downloader so connecten, dass Kachel gleich in
+//die Szene getan werden:
 void MainWindow::starteKarte(int z, int x, int y)
 	{
 	downl[0]->ladeKachel(z, x-1, y-1, 0);
@@ -79,11 +90,10 @@ void MainWindow::starteKarte(int z, int x, int y)
 
 	downl[8]->ladeKachel(z, x+1, y+1, 8);
 	connect(downl[8], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-
 	}
 
 
+//alle 9 Kacheln werden um das Zentrum geladen:
 void MainWindow::setzeKarteNeu(int z, int x, int y)
 	{
 	downl[0]->ladeKachel(z, x-1, y-1, 0);
@@ -125,8 +135,11 @@ void MainWindow::statuszeileAnlegen()
 	statusBar()->addWidget(statusLabel);
 	}
 
+
 void MainWindow::pixmapAdden(QPixmap meinePix, int index)
 	{
+	pixmaps[index]=meinePix;
+
 	if(hilfe)
 		{
 		kacheln[index]=szene->addPixmap(meinePix);
@@ -166,7 +179,6 @@ void MainWindow::pixmapAdden(QPixmap meinePix, int index)
 		}
 	else
 		{
-		//std::cout<<"else-Zweig\n";
 		kacheln[index]->setPixmap(meinePix);
 		}
 	}
@@ -178,40 +190,36 @@ void MainWindow::geheNorden()
 		//{
 		ykoord=ykoord-1;
 
-		//starteKarte(zoom, xkoord, ykoord);
+		setzeKarteNeu(zoom, xkoord, ykoord);
 
 		//(kacheln[0])->setOffset(QPoint(0, 2));
 		//(kacheln[1])->setOffset(QPoint(0, 2));
 		//(kacheln[2])->setOffset(QPoint(0, 2));
 
-		/*for(int i=3; i<=8; i++)
+		/*pixmaps[6]=pixmaps[3];
+		pixmaps[7]=pixmaps[4];
+		pixmaps[8]=pixmaps[5];
+
+		pixmaps[3]=pixmaps[0];
+		pixmaps[4]=pixmaps[1];
+		pixmaps[5]=pixmaps[2];
+
+		//std::cout<<"\n";
+		for(int i=3; i<=8; i++)
 			{
-			std::cout<<i<<": "<<kacheln[i]<<std::endl;
-			}*/
-
-		kacheln[6]->setPixmap(kacheln[3]->pixmap());
-		kacheln[7]->setPixmap(kacheln[4]->pixmap());
-		kacheln[8]->setPixmap(kacheln[5]->pixmap());
-
-		/*std::cout<<"\n";
-		for(int i=6; i<=8; i++)
-			{
-			std::cout<<i<<": "<<kacheln[i]<<std::endl;
-			}*/
-
-		kacheln[3]->setPixmap(kacheln[0]->pixmap());
-		kacheln[4]->setPixmap(kacheln[1]->pixmap());
-		kacheln[5]->setPixmap(kacheln[2]->pixmap());
+			kacheln[i]->setPixmap(pixmaps[i]);
+			//kacheln[i]= new QGraphicsPixmapItem(pixmaps[i]);
+			}
 
 		downl[0]->ladeKachel(zoom,xkoord-1,ykoord-1,0);
 		downl[1]->ladeKachel(zoom,xkoord,ykoord-1,1);
 		downl[2]->ladeKachel(zoom,xkoord+1,ykoord-1,2);
-		zaehler++;
+		zaehler++;*/
 
-	/*	}
-	if(zaehler==1)
-		{
-		kacheln[6]->setPixmap(kacheln[6]->pixmap());
+	//	}
+	//if(zaehler==1)
+		//{
+		/*kacheln[6]->setPixmap(kacheln[6]->pixmap());
 		kacheln[7]->setPixmap(kacheln[7]->pixmap());
 		kacheln[8]->setPixmap(kacheln[8]->pixmap());
 		kacheln[0]->setPixmap(kacheln[0]->pixmap());
@@ -219,8 +227,8 @@ void MainWindow::geheNorden()
 		kacheln[2]->setPixmap(kacheln[2]->pixmap());
 		kacheln[3]->setPixmap(kacheln[3]->pixmap());
 		kacheln[4]->setPixmap(kacheln[4]->pixmap());
-		kacheln[5]->setPixmap(kacheln[5]->pixmap());
-		}*/
+		kacheln[5]->setPixmap(kacheln[5]->pixmap());*/
+		//}
 
 	}
 
@@ -229,7 +237,7 @@ void MainWindow::geheSueden()
 	{
 	ykoord=ykoord+1;
 
-	starteKarte(zoom, xkoord, ykoord);
+	setzeKarteNeu(zoom, xkoord, ykoord);
 
 	/*kacheln[0]->setPixmap(kacheln[3]->pixmap());
 	kacheln[1]->setPixmap(kacheln[4]->pixmap());
@@ -254,7 +262,7 @@ void MainWindow::geheOsten()
 	{
 	xkoord=xkoord+1;
 
-	starteKarte(zoom, xkoord, ykoord);
+	setzeKarteNeu(zoom, xkoord, ykoord);
 
 	/*kacheln[2]->setPixmap(kacheln[1]->pixmap());
 	kacheln[5]->setPixmap(kacheln[4]->pixmap());
@@ -279,7 +287,7 @@ void MainWindow::geheWesten()
 	{
 	xkoord=xkoord-1;
 
-	starteKarte(zoom, xkoord, ykoord);
+	setzeKarteNeu(zoom, xkoord, ykoord);
 
 	/*kacheln[0]->setPixmap(kacheln[1]->pixmap());
 	kacheln[3]->setPixmap(kacheln[4]->pixmap());
@@ -304,10 +312,10 @@ void MainWindow::zoomIn()
 	if(zoom<=18)
 		{
 		zoom=zoom+1;
+		xkoord=xkoord*2;
+		ykoord=ykoord*2;
+		setzeKarteNeu(zoom, xkoord, ykoord);
 		}
-	xkoord=xkoord*2;
-	ykoord=ykoord*2;
-	setzeKarteNeu(zoom, xkoord, ykoord);
 	}
 
 void MainWindow::zoomOut()
@@ -322,29 +330,39 @@ void MainWindow::zoomOut()
 	}
 
 
-void MainWindow::wheelEvent(QWheelEvent *event)
-	{
-	if(event->delta()>0)
-		{
-		//std::cout<<"zoomIn\n";
-		zoomIn();
-		}
-	else if(event->delta()<0)
-		{
-		//std::cout<<"zoomOut\n";
-		zoomOut();
-		}
-	}
-
 
 /*bool MainWindow::eventFilter(QObject *object, QEvent *event)
 	{
 	if(object == widget->getView()->viewport() && event->type() == QEvent::Wheel)
 		{
-		//qDebug() << "SCroll";
+		if(((QWheelEvent*)event)->delta()>0)
+			{
+			//std::cout<<"zoomIn\n";
+			zoomIn();
+			}
+		else if(((QWheelEvent*)event)->delta()<0)
+			{
+			//std::cout<<"zoomOut\n";
+			zoomOut();
+			}
 		return true;
 		}
 	return false;
 	}*/
 
 //http://stackoverflow.com/questions/16279003/how-to-disable-scrolling-functionality-on-wheel-event-qgraphicsview-qt-c
+
+
+void MainWindow::testSlot()
+	{
+	qDebug()<<QCursor::pos();
+	}
+
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+	{
+	//qDebug()<<event->pos();
+	//qDebug()<<QCursor::pos();
+	qDebug()<<widget->getView()->mapFromScene(event->pos());
+	}
+

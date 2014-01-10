@@ -6,10 +6,15 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
 	//Button und Zeug links im Fenster anlegen:
 	qdial=new QDial;
-	qspinbox=new QSpinBox;
+	//qspinbox=new QSpinBox;
+	test=new QPushButton("test");
+
+	qdial->setNotchesVisible(true);
+	//qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
+
 
 	//Buttons:
-	nord=new QPushButton("^\n|");
+	nord=new QPushButton("/\\\n|");
 	sued=new QPushButton("|\nV");
 	ost=new QPushButton("-->");
 	west=new QPushButton("<--");
@@ -23,10 +28,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	zoomInButton->setFont(QFont("Helvetica", 16, QFont::Normal));
 	zoomOutButton->setFont(QFont("Helvetica", 16, QFont::Normal));
 
-	qdial->setNotchesVisible(true);
-	qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
-
-	//Sachen ins Grid-Layout packen:
+	//Buttons ins Grid-Layout packen:
 	gridLayout = new QGridLayout(this);
 	gridLayout->addWidget(nord, 0, 0);
 	gridLayout->addWidget(sued, 1, 0);
@@ -34,35 +36,71 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->addWidget(west, 3, 0);
 	gridLayout->addWidget(zoomInButton, 4, 0);
 	gridLayout->addWidget(zoomOutButton, 5, 0);
-	gridLayout->addWidget(qspinbox, 6, 0);
+	//gridLayout->addWidget(qspinbox, 6, 0);
+	gridLayout->addWidget(test, 6, 0);
 	gridLayout->addWidget(qdial, 7, 0);
 
 	//Graphics-Scene anlegen und dem Grid-Layout hinzufügen:
 	QGraphicsScene *meineSzene = new QGraphicsScene;
-	graphicsView = new QGraphicsView(meineSzene);
+	graphicsView = new MeineView(meineSzene);
 
+	//Scrollbars der GraphicsView ausschalten:
 	graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	//std::cout<<graphicsView->DragMode<<std::endl;//=ScrollHandDrag;
-	//setDragMode(ScrollHandDrag);
-	//setInteractive(false);
-	//graphicsView->setDragMode(ScrollHandDrag);
 
+	//Dragmode setzen:
+	//graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+
+	//GraphicsView ins GridLayout packen:
 	gridLayout->addWidget(graphicsView, 0,1,8,1);
 
 	//Spalten schön hinziehen, damit Buttons schmal und Karte groß:
 	gridLayout->setColumnStretch(1, 10);
 	setLayout(gridLayout);
 
-	graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 	}
 
+
+//soll Zeiger auf die Szene zurückgeben:
 QGraphicsScene* Widgets::getSzene()
 	{
 	return(graphicsView->scene());
 	}
 
-QGraphicsView* Widgets::getView()
+
+//soll Zeiger auf die View zurückgeben:
+MeineView* Widgets::getView()
 	{
 	return(graphicsView);
+	}
+
+
+//soll Zeiger auf den gewünschten Button zurückgeben:
+QPushButton* Widgets::getButton(int nummer /*enum button*/)
+	{
+	switch(nummer)
+		{
+		case 0:
+			return(nord);
+			break;
+		case 1:
+			return(sued);
+			break;
+		case 2:
+			return(ost);
+			break;
+		case 3:
+			return(west);
+			break;
+		case 4:
+			return(zoomInButton);
+			break;
+		case 5:
+			return(zoomOutButton);
+			break;
+		case 6:
+			return(test);
+			break;
+		}
+	//return(new QPushButton()); //gegen die Warnungen beim Kompilieren
 	}
