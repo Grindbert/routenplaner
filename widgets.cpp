@@ -5,13 +5,15 @@
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
 	//Button und Zeug links im Fenster anlegen:
-	qdial=new QDial;
+	//qdial=new QDial;
 	//qspinbox=new QSpinBox;
-	test=new QPushButton("test");
+	//test=new QPushButton("test");
 
-	qdial->setNotchesVisible(true);
+	//qdial->setNotchesVisible(true);
 	//qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
 
+	xKoordLabel=new QLabel("x: undefiniert");
+	yKoordLabel=new QLabel("y: undefiniert");
 
 	//Buttons:
 	nord=new QPushButton("/\\\n|");
@@ -36,12 +38,14 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->addWidget(west, 3, 0);
 	gridLayout->addWidget(zoomInButton, 4, 0);
 	gridLayout->addWidget(zoomOutButton, 5, 0);
+	gridLayout->addWidget(xKoordLabel, 6, 0);
+	gridLayout->addWidget(yKoordLabel, 7, 0);
 	//gridLayout->addWidget(qspinbox, 6, 0);
-	gridLayout->addWidget(test, 6, 0);
-	gridLayout->addWidget(qdial, 7, 0);
+	//gridLayout->addWidget(test, 6, 0);
+	//gridLayout->addWidget(qdial, 7, 0);
 
 	//Graphics-Scene anlegen und dem Grid-Layout hinzufügen:
-	QGraphicsScene *meineSzene = new QGraphicsScene;
+	MeineSzene *meineSzene = new MeineSzene;
 	graphicsView = new MeineView(meineSzene);
 
 	//Scrollbars der GraphicsView ausschalten:
@@ -49,7 +53,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 	//Dragmode setzen:
-	//graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
+	graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 
 	//GraphicsView ins GridLayout packen:
 	gridLayout->addWidget(graphicsView, 0,1,8,1);
@@ -58,13 +62,6 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->setColumnStretch(1, 10);
 	setLayout(gridLayout);
 
-	}
-
-
-//soll Zeiger auf die Szene zurückgeben:
-QGraphicsScene* Widgets::getSzene()
-	{
-	return(graphicsView->scene());
 	}
 
 
@@ -98,9 +95,17 @@ QPushButton* Widgets::getButton(int nummer /*enum button*/)
 		case 5:
 			return(zoomOutButton);
 			break;
-		case 6:
-			return(test);
-			break;
+		//case 6:
+		//	return(test);
+		//	break;
 		}
 	//return(new QPushButton()); //gegen die Warnungen beim Kompilieren
+	}
+
+
+void Widgets::koordSetzen(QPointF punkt)
+	{
+	xKoordLabel->setText("x: "+QString::number(punkt.x()));
+	yKoordLabel->setText("y: "+QString::number(punkt.y()));
+	graphicsView->scene()->addEllipse(punkt.x(),punkt.y(),4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue));
 	}

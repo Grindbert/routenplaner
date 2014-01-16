@@ -10,9 +10,16 @@
 #include <vector>
 #include <QGraphicsPixmapItem>
 #include <QAction>
+#include <QFileDialog>
+#include <fstream>	//filestreams
+#include <sstream>	//stringstream
+#include <stdlib.h>
 
 #include "widgets.h"
 #include "downloader.h"
+#include "Knoten.h"		//Klasse Knoten einbinden
+#include "Wegfindung.h"	//Dijkstra-Algorithmus
+#include "Timer.h"
 
 
 class MainWindow : public QMainWindow
@@ -21,7 +28,6 @@ class MainWindow : public QMainWindow
 	QMenu* fileMenu;	//Menüleiste
 	QLabel* statusLabel;	//kommt in die Statuszeile
 	Widgets* widget;	//Widgetcontainer
-	QGraphicsScene *szene;	//Zeiger auf die Szene im Graphics View
 	std::vector<QGraphicsPixmapItem*> kacheln;	//speichert Zeiger
 				//auf die Pixmaps, die als QGrahicsPixmapItem in die
 				//Szene getan werden
@@ -30,6 +36,8 @@ class MainWindow : public QMainWindow
 	std::vector<Downloader*> downl;	//Downloader für die Kacheln
 	int zoom, xkoord, ykoord;	//speichert aktuelle Zoomstufe,
 			//x- und y-Nummern der Kacheln
+
+	std::vector<Knoten> *knoten;
 
 	public:
 	MainWindow(QWidget *parent = 0);
@@ -40,7 +48,6 @@ class MainWindow : public QMainWindow
 	void statuszeileAnlegen();
 	void starteKarte(int, int, int);
 	void setzeKarteNeu(int, int, int);
-	//bool eventFilter(QObject *, QEvent *);
 
 
 	private slots:
@@ -51,12 +58,13 @@ class MainWindow : public QMainWindow
 	void geheWesten();
 	void zoomIn();
 	void zoomOut();
-	void mousePressEvent(QMouseEvent*);
-
-	void testSlot();
+	void graphLaden();
+	void wegBerechnen();
+	void rechteMaustasteGeklickt(QPointF);
 
 	//irgendwelche Hilfsvariablen, die noch weg sollen,
 	//aber zentral an einer Stelle stehen sollen
+
 	public:
 	int zaehler;
 	bool hilfe;

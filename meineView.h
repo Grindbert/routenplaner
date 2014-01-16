@@ -4,6 +4,8 @@
 #include <QGraphicsView>
 #include <QWheelEvent>
 
+#include "meineSzene.h"
+
 //meineView soll im Prinzip das Gleiche machen, wie die
 //normale QGraphicsView, aber beim Scrollen, also den
 //wheelEvents, soll in der Karte gezoomt und nicht gescrollt

@@ -1,6 +1,4 @@
 #include "mainwindow.h"
-//#include "widgets.h"
-//#include "downloader.h"
 
 #include <iostream>
 
@@ -14,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	//Fenster anlegen:
 	setAttribute(Qt::WA_DeleteOnClose);
 	setGeometry(100, 100, 800, 600);	//Größe und Ort des "aufpoppens" festlegen
+	setWindowTitle("Bastis fantastischer Routenplaner");
 
 	//Widgets anlegen und im Fenster zentrieren:
 	widget = new Widgets(this);	//Widgetcontainer anlegen
 	setCentralWidget(widget);
-	szene=widget->getSzene();	//Zeiger auf die graphicsScene holen
 
 	menuAnlegen();
 	statuszeileAnlegen();
@@ -47,12 +45,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	connect(widget->getButton(3), SIGNAL(clicked()), this, SLOT(geheWesten()));
 	connect(widget->getButton(4), SIGNAL(clicked()), this, SLOT(zoomIn()));
 	connect(widget->getButton(5), SIGNAL(clicked()), this, SLOT(zoomOut()));
-	connect(widget->getButton(6), SIGNAL(clicked()), this, SLOT(testSlot()));
 
 	connect(widget->getView(), SIGNAL(zoomInSignal()), this, SLOT(zoomIn()));
 	connect(widget->getView(), SIGNAL(zoomOutSignal()), this, SLOT(zoomOut()));
 
-	//widget->getView()->viewport()->installEventFilter(this);
+	connect(widget->getView()->scene(), SIGNAL(rechteMaustaste(QPointF)), this, SLOT(rechteMaustasteGeklickt(QPointF)));
+
+	//anderes Hilfszeug:
+
 	}
 
 
@@ -64,32 +64,11 @@ MainWindow::~MainWindow()
 //die Szene getan werden:
 void MainWindow::starteKarte(int z, int x, int y)
 	{
-	downl[0]->ladeKachel(z, x-1, y-1, 0);
-	connect(downl[0], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[1]->ladeKachel(z, x, y-1, 1);
-	connect(downl[1], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[2]->ladeKachel(z, x+1, y-1, 2);
-	connect(downl[2], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[3]->ladeKachel(z, x-1, y, 3);
-	connect(downl[3], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[4]->ladeKachel(z, x, y, 4);
-	connect(downl[4], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[5]->ladeKachel(z, x+1, y, 5);
-	connect(downl[5], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[6]->ladeKachel(z, x-1, y+1, 6);
-	connect(downl[6], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[7]->ladeKachel(z, x, y+1, 7);
-	connect(downl[7], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[8]->ladeKachel(z, x+1, y+1, 8);
-	connect(downl[8], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
+	for(int i=0; i<9; i++)
+		{
+		connect(downl[i], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
+		}
+	setzeKarteNeu(z, x, y);
 	}
 
 
@@ -118,20 +97,21 @@ void MainWindow::menuAnlegen()
 	ladeGraph->setShortcut(tr("Ctrl+L"));
 	ladeGraph->setStatusTip(tr("lies Graph von Textdatei ein"));
 	fileMenu->addAction(ladeGraph);
+	connect(ladeGraph, SIGNAL(triggered()), this, SLOT(graphLaden()));
 
 	//Beenden-Button:
-	QAction *quitAction = new QAction(tr("&Beenden"), this);
-	quitAction->setShortcut(tr("Ctrl+T"));
-	quitAction->setStatusTip(tr("Programm beenden"));
-	fileMenu->addAction(quitAction);
+	QAction *beenden = new QAction(tr("&Beenden"), this);
+	beenden->setShortcut(tr("Ctrl+T"));
+	beenden->setStatusTip(tr("Programm beenden"));
+	fileMenu->addAction(beenden);
 	// qApp ist globale Variable der Applikation
-	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+	connect(beenden, SIGNAL(triggered()), qApp, SLOT(quit()));
 	}
 
 
 void MainWindow::statuszeileAnlegen()
 	{
-	statusLabel = new QLabel("Hier entsteht bald ein sinnvoller Text.");
+	statusLabel = new QLabel("Solange du das hier noch lesen kannst, ist alles in Ordnung! ;-)");
 	statusBar()->addWidget(statusLabel);
 	}
 
@@ -142,8 +122,7 @@ void MainWindow::pixmapAdden(QPixmap meinePix, int index)
 
 	if(hilfe)
 		{
-		kacheln[index]=szene->addPixmap(meinePix);
-
+		kacheln[index]=widget->getView()->scene()->addPixmap(meinePix);
 		switch(index)
 			{
 			case 0:
@@ -330,39 +309,112 @@ void MainWindow::zoomOut()
 	}
 
 
-
-/*bool MainWindow::eventFilter(QObject *object, QEvent *event)
+void MainWindow::rechteMaustasteGeklickt(QPointF punkt)
 	{
-	if(object == widget->getView()->viewport() && event->type() == QEvent::Wheel)
+	widget->koordSetzen(punkt);
+	}
+
+
+void MainWindow::graphLaden()
+	{
+	QString infile = QFileDialog::getOpenFileName(this, tr("Open Image"), "~", tr("All Files (*)"));
+	//QFile inputFile(fileName);
+	//inputFile.open(QIODevice::ReadOnly);
+	//qDebug()<<fileName;
+
+	//öffne InputFile:
+	std::ifstream meineDatei(infile.toStdString().c_str());
+
+	if(!meineDatei)
 		{
-		if(((QWheelEvent*)event)->delta()>0)
-			{
-			//std::cout<<"zoomIn\n";
-			zoomIn();
-			}
-		else if(((QWheelEvent*)event)->delta()<0)
-			{
-			//std::cout<<"zoomOut\n";
-			zoomOut();
-			}
-		return true;
+		statusLabel->setText("Fehler: Konnte Datei nicht einlesen! Schreibfehler?");
 		}
-	return false;
-	}*/
 
-//http://stackoverflow.com/questions/16279003/how-to-disable-scrolling-functionality-on-wheel-event-qgraphicsview-qt-c
+	else
+		{
+		unsigned int knotenzahl=0;
+		unsigned int kantenzahl=0;
+
+		//zum Einlesen der Knoten:
+		std::string x;		//x- und y-Koordinaten werden zunächst in string
+		std::string y;		//eingelesen und dann in float umgewandelt (geht
+								//schneller als direktes Einlesen in float)
+
+		//zum einlesen der Kanten:
+		unsigned int start=0;	//Index vom Startknoten
+		unsigned int ziel=0;	//Index vom Zielknoten
+		std::string laenge;		//speichert Kantenlaene (siehe oben x- und
+								//y-Koordinaten, warum als string)
+
+		//Einlesen:
+		meineDatei>>knotenzahl;
+		std::vector<Knoten> *knoten = new std::vector<Knoten>(knotenzahl);
+
+		meineDatei>>kantenzahl;
+
+		//Knoten:
+		for(unsigned int i = 0; i<knotenzahl; i++)
+			{
+			meineDatei>>x>>y;
+			(*knoten)[i].setzeKoord(atof(x.c_str()),atof(y.c_str()),i);
+			}
+
+		//Kanten:
+		for(unsigned int i = 0; i<kantenzahl; i++)
+			{
+			meineDatei>>start>>ziel>>laenge;
+			(*knoten)[start].kanteHinzufuegen(&((*knoten)[ziel]),atof(laenge.c_str()));
+			}
 
 
-void MainWindow::testSlot()
-	{
-	qDebug()<<QCursor::pos();
+		/*for(int i = 0; i<(*knoten).size(); i++)
+			{
+			(*knoten)[i].print();
+			}*/
+		}
 	}
 
 
-void MainWindow::mousePressEvent(QMouseEvent *event)
+void MainWindow::wegBerechnen()
 	{
-	//qDebug()<<event->pos();
-	//qDebug()<<QCursor::pos();
-	qDebug()<<widget->getView()->mapFromScene(event->pos());
+	statusLabel->setText("Klicken erfolgreich, Sir!");
+	/*
+	#include<iostream>	//cin und cout
+
+	#include"Queue.h"
+	*/
+
+	//Timer zeit;
+	//zeit.start();
+
+	/*
+
+	//Variablen, um Argumente aufzufangen:
+	int st,zi;	//start- und zielnummer speichern
+
+	*/
+
+	/*
+	//===============================================================
+	//Wegfindung starten:
+	bool *gibtWeg = new bool(false);	//um zu prüfen, ob ein Weg zwischen Start und Ziel existiert
+	//zeit.start();
+	std::vector<int> weg = Wegfindung(knoten, st, zi, gibtWeg);
+	//zeit.stop();
+	//Wenn es einen Weg gibt, printe ihn aus:
+	if(*gibtWeg)
+		{
+		std::cout<<"Pfad von Knoten "<<weg[weg.size() -1]<<" zum Knoten "<<weg[0]<<" ist:\n"<<weg[weg.size() -1];
+		for(int i = (weg.size()) -2; i>=0; i--)
+			{
+			std::cout<<" -> "<<weg[i];
+			}
+		std::cout<<"\n\n";
+		}
+	//zeit.stop();
+	std::cout<<zeit.secs()<<std::endl;
+	*/
+
 	}
+
 

@@ -11,18 +11,20 @@
 #include <QGraphicsScene>
 #include <QPoint>
 #include <QFont>
+#include <QLabel>
 #include <string>
 
 #include "meineView.h"
+#include "meineSzene.h"
 
 class Widgets : public QWidget
 	{
 	Q_OBJECT
 
 	private:
-	QDial *qdial;
+	//QDial *qdial;
 	//QSpinBox *qspinbox;
-	QPushButton *test;
+	//QPushButton *test;
 
 	QGridLayout *gridLayout;
 	MeineView *graphicsView;
@@ -35,10 +37,13 @@ class Widgets : public QWidget
 	QPushButton *zoomInButton;
 	QPushButton *zoomOutButton;
 
+	QLabel *xKoordLabel;
+	QLabel *yKoordLabel;
+
 	public:
 	explicit Widgets(QMainWindow *parent = 0);
+	void koordSetzen(QPointF);
 
-	QGraphicsScene* getSzene();
 	MeineView* getView();
 	QPushButton* getButton(int /*enum button*/);
 	};
