@@ -31,14 +31,19 @@ void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 void Downloader::fileDownloaded(QNetworkReply* pReply)
 	{
 	//Umwandeln des Replys in eine Pixmap:
-	QByteArray zwischenablage;
+	//QByteArray zwischenablage;
+
+	bla=pReply;
+
 	zwischenablage = pReply->readAll();
+
+	//std::cout<<pReply->readAll()<<std::endl;
 
 	std::cout<<zwischenablage.isEmpty()<<"  "<<zwischenablage.size()<<std::endl;
 
 	meinePixmap->loadFromData(zwischenablage);
 
-	std::cout<<meinePixmap->size().height()<<std::endl;
+	std::cout<<meinePixmap->size().height()<<" "<<meinePixmap->isNull()<<std::endl;
 
 	pReply->deleteLater();
 

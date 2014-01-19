@@ -87,6 +87,9 @@ void MainWindow::setzeKarteNeu(int z, int x, int y)
 	downl[6]->ladeKachel(z, x-1, y+1, 6);
 	downl[7]->ladeKachel(z, x, y+1, 7);
 	downl[8]->ladeKachel(z, x+1, y+1, 8);
+
+	qDebug()<<"Das ist die Ausgabe: "<<downl[1]->zwischenablage;
+	qDebug()<<"bla ist: "<<downl[1]->bla->error();
 	}
 
 

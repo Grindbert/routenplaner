@@ -30,6 +30,10 @@ class Downloader : public QObject
 
 	private slots:
 	void fileDownloaded(QNetworkReply* pReply);
+
+	public:
+	QByteArray zwischenablage;
+	QNetworkReply *bla;
 	};
 
 
