@@ -14,12 +14,15 @@
 #include <fstream>	//filestreams
 #include <sstream>	//stringstream
 #include <stdlib.h>
+#include <vector>
 
 #include "widgets.h"
 #include "downloader.h"
 #include "Knoten.h"		//Klasse Knoten einbinden
 #include "Wegfindung.h"	//Dijkstra-Algorithmus
 #include "Timer.h"
+
+#include <iostream>
 
 
 class MainWindow : public QMainWindow
@@ -32,12 +35,15 @@ class MainWindow : public QMainWindow
 				//auf die Pixmaps, die als QGrahicsPixmapItem in die
 				//Szene getan werden
 	std::vector<QPixmap> pixmaps;
+	std::vector<QGraphicsEllipseItem*> punktvkt;
 
 	std::vector<Downloader*> downl;	//Downloader für die Kacheln
 	int zoom, xkoord, ykoord;	//speichert aktuelle Zoomstufe,
 			//x- und y-Nummern der Kacheln
 
 	std::vector<Knoten> *knoten;
+
+	QPointF mausDrag;
 
 	public:
 	MainWindow(QWidget *parent = 0);
@@ -61,6 +67,7 @@ class MainWindow : public QMainWindow
 	void graphLaden();
 	void wegBerechnen();
 	void rechteMaustasteGeklickt(QPointF);
+	void bewegungTesten(bool, QPointF);
 
 	//irgendwelche Hilfsvariablen, die noch weg sollen,
 	//aber zentral an einer Stelle stehen sollen
@@ -70,6 +77,7 @@ class MainWindow : public QMainWindow
 	bool hilfe;
 	int hilfszaehler;
 
+	QPoint ziehhilfe;
 	};
 
 #endif // MAINWINDOW_H

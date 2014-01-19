@@ -1,5 +1,7 @@
 #include "downloader.h"
 
+#include <iostream>
+
 Downloader::Downloader(QObject *parent) :
 	QObject(parent)
 	{
@@ -31,7 +33,12 @@ void Downloader::fileDownloaded(QNetworkReply* pReply)
 	//Umwandeln des Replys in eine Pixmap:
 	QByteArray zwischenablage;
 	zwischenablage = pReply->readAll();
+
+	std::cout<<zwischenablage.isEmpty()<<"  "<<zwischenablage.size()<<std::endl;
+
 	meinePixmap->loadFromData(zwischenablage);
+
+	std::cout<<meinePixmap->size().height()<<std::endl;
 
 	pReply->deleteLater();
 

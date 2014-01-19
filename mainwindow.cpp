@@ -51,6 +51,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	connect(widget->getView()->scene(), SIGNAL(rechteMaustaste(QPointF)), this, SLOT(rechteMaustasteGeklickt(QPointF)));
 
+	connect(widget->getView()->scene(), SIGNAL(linkeMaustasteGedruckt(bool,QPointF)), this, SLOT(bewegungTesten(bool,QPointF)));
+	connect(widget->getView()->scene(), SIGNAL(linkeMaustasteLoslassen(bool,QPointF)), this, SLOT(bewegungTesten(bool,QPointF)));
+
 	//anderes Hilfszeug:
 
 	}
@@ -119,7 +122,6 @@ void MainWindow::statuszeileAnlegen()
 void MainWindow::pixmapAdden(QPixmap meinePix, int index)
 	{
 	pixmaps[index]=meinePix;
-
 	if(hilfe)
 		{
 		kacheln[index]=widget->getView()->scene()->addPixmap(meinePix);
@@ -170,6 +172,21 @@ void MainWindow::geheNorden()
 		ykoord=ykoord-1;
 
 		setzeKarteNeu(zoom, xkoord, ykoord);
+
+		/*for(int i = 0; i<punktvkt.size();i++)
+			{
+			if((punktvkt[i])->pos().y()>256)
+				{
+				widget->getView()->scene()->removeItem(punktvkt[i]);
+				//delete punktvkt[i];
+				//punktvkt.erase(i);
+				std::cout<<"jetzt sollte er löschen...\n";
+				}
+			else
+				{
+				punktvkt[i]->moveBy(0, 256);
+				}
+			}*/
 
 		//(kacheln[0])->setOffset(QPoint(0, 2));
 		//(kacheln[1])->setOffset(QPoint(0, 2));
@@ -311,8 +328,25 @@ void MainWindow::zoomOut()
 
 void MainWindow::rechteMaustasteGeklickt(QPointF punkt)
 	{
-	widget->koordSetzen(punkt);
+	punktvkt.push_back(widget->koordSetzen(punkt));
 	}
+
+
+void MainWindow::bewegungTesten(bool jaOderNein, QPointF punkt)
+	{
+	if(jaOderNein)
+		{
+		mausDrag=punkt;
+		qDebug()<<"Geklickt\n"<<mausDrag;
+		}
+	else
+		{
+		mausDrag=mausDrag-punkt;
+		qDebug()<<"Losgelassen\n"<<mausDrag;
+		}
+	}
+
+
 
 
 void MainWindow::graphLaden()

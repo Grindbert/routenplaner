@@ -14,9 +14,12 @@ class MeineSzene : public QGraphicsScene
 
 	signals:
 	void rechteMaustaste(QPointF);
+	void linkeMaustasteGedruckt(bool, QPointF);
+	void linkeMaustasteLoslassen(bool, QPointF);
 
 	private slots:
 	void mousePressEvent(QGraphicsSceneMouseEvent*);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
 	};
 
 #endif // MEINESZENE_H

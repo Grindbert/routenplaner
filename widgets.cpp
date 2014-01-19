@@ -103,9 +103,9 @@ QPushButton* Widgets::getButton(int nummer /*enum button*/)
 	}
 
 
-void Widgets::koordSetzen(QPointF punkt)
+QGraphicsEllipseItem* Widgets::koordSetzen(QPointF punkt)
 	{
 	xKoordLabel->setText("x: "+QString::number(punkt.x()));
 	yKoordLabel->setText("y: "+QString::number(punkt.y()));
-	graphicsView->scene()->addEllipse(punkt.x(),punkt.y(),4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue));
+	return(graphicsView->scene()->addEllipse(punkt.x(),punkt.y(),4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
 	}

@@ -13,6 +13,7 @@
 #include <QFont>
 #include <QLabel>
 #include <string>
+#include <QGraphicsEllipseItem>
 
 #include "meineView.h"
 #include "meineSzene.h"
@@ -42,7 +43,7 @@ class Widgets : public QWidget
 
 	public:
 	explicit Widgets(QMainWindow *parent = 0);
-	void koordSetzen(QPointF);
+	QGraphicsEllipseItem* koordSetzen(QPointF);
 
 	MeineView* getView();
 	QPushButton* getButton(int /*enum button*/);
