@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QCursor>
 
 class MeineSzene : public QGraphicsScene
 	{

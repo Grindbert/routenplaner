@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     meineView.cpp \
     Wegfindung.cpp \
     Knoten.cpp \
-    meineSzene.cpp
+    meineSzene.cpp \
+    funktionen.cpp
 HEADERS += mainwindow.h \
     widgets.h \
     downloader.h \
@@ -22,4 +23,5 @@ HEADERS += mainwindow.h \
     Timer.h \
     Wegfindung.h \
     Knoten.h \
-    meineSzene.h
+    meineSzene.h \
+    funktionen.h

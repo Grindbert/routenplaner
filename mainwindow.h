@@ -21,6 +21,7 @@
 #include "Knoten.h"		//Klasse Knoten einbinden
 #include "Wegfindung.h"	//Dijkstra-Algorithmus
 #include "Timer.h"
+#include "funktionen.h"
 
 #include <iostream>
 
@@ -28,6 +29,9 @@
 class MainWindow : public QMainWindow
 	{
 	Q_OBJECT
+	int sichtbaresFeld;
+	int seitenlaenge;
+	int anzahlKacheln;
 	QMenu* fileMenu;	//Menüleiste
 	QLabel* statusLabel;	//kommt in die Statuszeile
 	Widgets* widget;	//Widgetcontainer
@@ -36,6 +40,7 @@ class MainWindow : public QMainWindow
 				//Szene getan werden
 	std::vector<QPixmap> pixmaps;
 	std::vector<QGraphicsEllipseItem*> punktvkt;
+	std::vector<int> perm;
 
 	std::vector<Downloader*> downl;	//Downloader für die Kacheln
 	int zoom, xkoord, ykoord;	//speichert aktuelle Zoomstufe,
@@ -74,8 +79,8 @@ class MainWindow : public QMainWindow
 
 	public:
 	int zaehler;
-	bool hilfe;
-	int hilfszaehler;
+	//bool hilfe;
+	//int hilfszaehler;
 
 	QPoint ziehhilfe;
 	};

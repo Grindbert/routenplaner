@@ -300,7 +300,7 @@ void MainWindow::geheSueden()
 		int xDazu=-1*sichtbaresFeld/2;
 		for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
 			{
-			downl[perm[(((2*sichtbaresFeld)-1)*seitenlaenge)+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[(((2*sichtbaresFeld)-2)*seitenlaenge)+i]);
+			downl[perm[(((2*sichtbaresFeld)-1)*seitenlaenge)+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[(((2*sichtbaresFeld)-1)*seitenlaenge)+i]);
 			xDazu++;
 			}
 		}

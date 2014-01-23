@@ -1,6 +1,7 @@
 #include "widgets.h"
 
 #include <iostream>
+#include "funktionen.h"
 
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
@@ -12,8 +13,8 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	//qdial->setNotchesVisible(true);
 	//qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
 
-	xKoordLabel=new QLabel("x: undefiniert");
-	yKoordLabel=new QLabel("y: undefiniert");
+	xKoordLabel=new QLabel("lon: undefiniert");
+	yKoordLabel=new QLabel("lat: undefiniert");
 
 	//Buttons:
 	nord=new QPushButton("/\\\n|");
@@ -103,9 +104,14 @@ QPushButton* Widgets::getButton(int nummer /*enum button*/)
 	}
 
 
-QGraphicsEllipseItem* Widgets::koordSetzen(QPointF punkt)
+QGraphicsEllipseItem* Widgets::koordSetzen(QPointF punkt,int x, int y, int z)
 	{
-	xKoordLabel->setText("x: "+QString::number(punkt.x()));
-	yKoordLabel->setText("y: "+QString::number(punkt.y()));
-	return(graphicsView->scene()->addEllipse(punkt.x(),punkt.y(),4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
+	xKoordLabel->setText("lon: "+QString::number(punkt.x()));
+	yKoordLabel->setText("lat: "+QString::number(punkt.y()));
+	double tilex=long2tile(punkt.x(),z);
+	double tiley=lat2tile(punkt.y(),z);
+	//std::cout<<tilex<<" "<<tiley<<"\n";
+	//std::cout<<x<<" "<<y<<" "<<z<<"\n";
+	//std::cout<<(tilex-(double)x)<<" "<<(tiley-y)*256<<"\n\n";
+	return(graphicsView->scene()->addEllipse((tilex-x)*256,(tiley-y)*256,4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
 	}

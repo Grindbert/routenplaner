@@ -16,12 +16,31 @@ void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 	{
 	stelleInSzene=stelleInSzeneEingabe;
 
+	int xZumBearbeiten=x;
+
+	//Wenn x rechts aus der Weltkarte rausläuft, fange wieder links an:
+	if(xZumBearbeiten>=pow(2,z))
+		{
+		xZumBearbeiten=xZumBearbeiten%((int)pow(2,z));
+		}
+
+	//Wenn x links aus der Weltkarte rausläuft, fange rechts wieder an:
+	if(xZumBearbeiten<0)
+		{
+		xZumBearbeiten=pow(2,z)+(xZumBearbeiten%((int)pow(2,z)));
+		}
+
 	//Url für die angefragte Kachel zusammenbauen:
 	QString url = "http://tile.openstreetmap.org/" + QString::number(z)
-			+ "/" + QString::number(x) + "/" + QString::number(y) + ".png";
+			+ "/" + QString::number(xZumBearbeiten) + "/" + QString::number(y) + ".png";
 
 	//Kachel runterladen:
-	meinManager.get(QNetworkRequest(QUrl(url)));
+	QNetworkRequest re=QNetworkRequest(QUrl(url));
+	re.setRawHeader("User-Agent" , "Mozilla Firefox");
+
+	meinManager.get(re);
+
+	//meinManager.get(QNetworkRequest(QUrl(url)));
 
 	//wenn fertig mit ladeKachel, wird gleich mit fileDownloaded 3 Zeilen weiter
 	//unten weitergemacht
@@ -31,19 +50,10 @@ void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 void Downloader::fileDownloaded(QNetworkReply* pReply)
 	{
 	//Umwandeln des Replys in eine Pixmap:
-	//QByteArray zwischenablage;
-
-	bla=pReply;
-
+	QByteArray zwischenablage;
 	zwischenablage = pReply->readAll();
 
-	//std::cout<<pReply->readAll()<<std::endl;
-
-	std::cout<<zwischenablage.isEmpty()<<"  "<<zwischenablage.size()<<std::endl;
-
 	meinePixmap->loadFromData(zwischenablage);
-
-	std::cout<<meinePixmap->size().height()<<" "<<meinePixmap->isNull()<<std::endl;
 
 	pReply->deleteLater();
 

@@ -1,7 +1,5 @@
 #include "meineSzene.h"
 
-#include <iostream>
-
 MeineSzene::MeineSzene() : QGraphicsScene()
 {
 }
@@ -15,9 +13,8 @@ void MeineSzene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		}
 	if(event->button()==Qt::LeftButton)
 		{
-		QPointF startpunkt=event->scenePos();
+		QPointF startpunkt=QCursor::pos();//event->scenePos();
 		emit linkeMaustasteGedruckt(true, startpunkt);
-		//std::cout<<"Yey?!\n";
 		}
 	}
 
@@ -26,7 +23,7 @@ void MeineSzene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	{
 	if(event->button()==Qt::LeftButton)
 		{
-		QPointF endpunkt=event->scenePos();
+		QPointF endpunkt=QCursor::pos();//event->scenePos();
 		emit linkeMaustasteLoslassen(false, endpunkt);
 		}
 	}

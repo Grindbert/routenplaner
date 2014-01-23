@@ -10,6 +10,8 @@
 #include <QPixmap>
 #include <QString>
 
+#include <funktionen.h>
+
 
 class Downloader : public QObject
 	{
@@ -32,8 +34,8 @@ class Downloader : public QObject
 	void fileDownloaded(QNetworkReply* pReply);
 
 	public:
-	QByteArray zwischenablage;
-	QNetworkReply *bla;
+	//QByteArray zwischenablage;
+	//NetworkError bla;
 	};
 
 
