@@ -79,8 +79,6 @@ class MainWindow : public QMainWindow
 
 	public:
 	int zaehler;
-	//bool hilfe;
-	//int hilfszaehler;
 
 	QPoint ziehhilfe;
 	};

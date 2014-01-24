@@ -6,8 +6,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	{
 	//Hilfsvariablen setzen:
 	zaehler=0;
-	//hilfe=true;
-	//hilfszaehler=0;
 
 	//Fenster anlegen:
 	setAttribute(Qt::WA_DeleteOnClose);
@@ -25,15 +23,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	sichtbaresFeld=5;
 	seitenlaenge=3*sichtbaresFeld;
 	anzahlKacheln=seitenlaenge*seitenlaenge;
+	mausDrag=QPointF(0,0);
 	kacheln.resize(anzahlKacheln);
 	perm.resize(anzahlKacheln+seitenlaenge);
-	for(int i=0;i<perm.size();i++)
+	for(unsigned int i=0;i<perm.size();i++)
 		{
 		perm[i]=i;
 		}
 	//pixmaps.resize(anzahlKacheln);
 	downl.resize(anzahlKacheln);
-	for(int i = 0; i<downl.size(); i++)		//die 9 Downloader (einer für jede
+	for(unsigned int i = 0; i<downl.size(); i++)		//die 9 Downloader (einer für jede
 		{							//Kachel einen) anlegen
 		downl[i]=new Downloader;
 		}
@@ -144,121 +143,42 @@ void MainWindow::statuszeileAnlegen()
 
 void MainWindow::pixmapAdden(QPixmap meinePix, int index)
 	{
-	kacheln[perm[index]]->setPixmap(meinePix);
+	kacheln[index]->setPixmap(meinePix);
 	}
 
 
 void MainWindow::geheNorden()
 	{
-	//if(zaehler==0)
-		//{
 	if(ykoord>1)
 		{
 		ykoord=ykoord-1;
 
-		//setzeKarteNeu(zoom, xkoord, ykoord);
-
-		kacheln[perm[6]]->moveBy(0,-768);
-		kacheln[perm[7]]->moveBy(0,-768);
-		kacheln[perm[8]]->moveBy(0,-768);
-
-		perm[9]=perm[6];
-		perm[10]=perm[7];
-		perm[11]=perm[8];
-
-		perm[6]=perm[3];
-		perm[7]=perm[4];
-		perm[8]=perm[5];
-
-		perm[3]=perm[0];
-		perm[4]=perm[1];
-		perm[5]=perm[2];
-
-		perm[0]=perm[9];
-		perm[1]=perm[10];
-		perm[2]=perm[11];
-
-
-		/*kacheln[9]=kacheln[6];
-		kacheln[10]=kacheln[7];
-		kacheln[11]=kacheln[8];
-		std::cout<<kacheln[1]<<std::endl;
-		kacheln[6]=kacheln[3];
-		kacheln[7]=kacheln[4];
-		kacheln[8]=kacheln[5];
-
-		kacheln[3]=kacheln[0];
-		kacheln[4]=kacheln[1];
-		kacheln[5]=kacheln[2];
-
-		kacheln[0]=kacheln[9];
-		kacheln[1]=kacheln[10];
-		kacheln[2]=kacheln[11];
-
-		kacheln[0]->moveBy(0, -512);
-		kacheln[1]->moveBy(0, -512);
-		kacheln[2]->moveBy(0, -512);*/
-
-		downl[perm[0]]->ladeKachel(zoom,xkoord-1,ykoord-1,0);
-		downl[perm[1]]->ladeKachel(zoom,xkoord,ykoord-1,1);
-		downl[perm[2]]->ladeKachel(zoom,xkoord+1,ykoord-1,2);
-
-		//widget->getView()->scene()->update();*/
-		}
-
-		/*for(int i = 0; i<punktvkt.size();i++)
+		for(int i=anzahlKacheln-seitenlaenge;i<anzahlKacheln;i++)
 			{
-			if((punktvkt[i])->pos().y()>256)
-				{
-				widget->getView()->scene()->removeItem(punktvkt[i]);
-				//delete punktvkt[i];
-				//punktvkt.erase(i);
-				std::cout<<"jetzt sollte er löschen...\n";
-				}
-			else
-				{
-				punktvkt[i]->moveBy(0, 256);
-				}
-			}*/
+			kacheln[perm[i]]->moveBy(0,seitenlaenge*(-256));
+			kacheln[perm[i]]->setPixmap(QPixmap(256,256));
 
-		//(kacheln[0])->setOffset(QPoint(0, 2));
-		//(kacheln[1])->setOffset(QPoint(0, 2));
-		//(kacheln[2])->setOffset(QPoint(0, 2));
-
-		/*pixmaps[6]=pixmaps[3];
-		pixmaps[7]=pixmaps[4];
-		pixmaps[8]=pixmaps[5];
-
-		pixmaps[3]=pixmaps[0];
-		pixmaps[4]=pixmaps[1];
-		pixmaps[5]=pixmaps[2];
-
-		//std::cout<<"\n";
-		for(int i=3; i<=8; i++)
-			{
-			kacheln[i]->setPixmap(pixmaps[i]);
-			//kacheln[i]= new QGraphicsPixmapItem(pixmaps[i]);
+			perm[i+seitenlaenge]=perm[i];
 			}
 
-		downl[0]->ladeKachel(zoom,xkoord-1,ykoord-1,0);
-		downl[1]->ladeKachel(zoom,xkoord,ykoord-1,1);
-		downl[2]->ladeKachel(zoom,xkoord+1,ykoord-1,2);
-		zaehler++;*/
+		for(int i=anzahlKacheln-1;i>=seitenlaenge;i--)
+			{
+			perm[i]=perm[i-seitenlaenge];
+			}
 
-	//	}
-	//if(zaehler==1)
-		//{
-		/*kacheln[6]->setPixmap(kacheln[6]->pixmap());
-		kacheln[7]->setPixmap(kacheln[7]->pixmap());
-		kacheln[8]->setPixmap(kacheln[8]->pixmap());
-		kacheln[0]->setPixmap(kacheln[0]->pixmap());
-		kacheln[1]->setPixmap(kacheln[1]->pixmap());
-		kacheln[2]->setPixmap(kacheln[2]->pixmap());
-		kacheln[3]->setPixmap(kacheln[3]->pixmap());
-		kacheln[4]->setPixmap(kacheln[4]->pixmap());
-		kacheln[5]->setPixmap(kacheln[5]->pixmap());*/
-		//}
+		for(int i=0;i<seitenlaenge;i++)
+			{
+			perm[i]=perm[anzahlKacheln+i];
+			}
 
+		int ersteStelleInZeile=((sichtbaresFeld)*seitenlaenge);
+		int xDazu=-1*sichtbaresFeld/2;
+		for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
+			{
+			downl[perm[ersteStelleInZeile+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord-(sichtbaresFeld/2),perm[ersteStelleInZeile+i]);
+			xDazu++;
+			}
+		}
 	}
 
 
@@ -271,107 +191,93 @@ void MainWindow::geheSueden()
 		for(int i=0;i<seitenlaenge;i++)
 			{
 			kacheln[perm[i]]->moveBy(0,seitenlaenge*256);
-			}
+			kacheln[perm[i]]->setPixmap(QPixmap(256,256));
 
-		/*for(int i=0;i<seitenlaenge;i++)
-			{
 			perm[anzahlKacheln+i]=perm[i];
 			}
 
-		for(int i=0;i<anzahlKacheln-seitenlaenge;i++)
+		for(int i=0;i<anzahlKacheln;i++)
 			{
 			perm[i]=perm[i+seitenlaenge];
 			}
 
-		for(int i=0;i<seitenlaenge;i++)
-			{
-			perm[anzahlKacheln-seitenlaenge+i]=perm[anzahlKacheln+i];
-			}*/
-
-		for(int i=0;i<anzahlKacheln;i++)
-			{
-			perm[i]+=15;
-			}
-		for(int i=0;i<seitenlaenge;i++)
-			{
-			perm[i+anzahlKacheln-seitenlaenge+1]=i;
-			}
-
+		int ersteStelleInZeile=(((2*sichtbaresFeld)-1)*seitenlaenge);
 		int xDazu=-1*sichtbaresFeld/2;
 		for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
 			{
-			downl[perm[(((2*sichtbaresFeld)-1)*seitenlaenge)+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[(((2*sichtbaresFeld)-2)*seitenlaenge)+i]);
+			downl[perm[ersteStelleInZeile+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[ersteStelleInZeile+i]);
 			xDazu++;
 			}
 		}
-
-	/*kacheln[0]->setPixmap(kacheln[3]->pixmap());
-	kacheln[1]->setPixmap(kacheln[4]->pixmap());
-	kacheln[2]->setPixmap(kacheln[5]->pixmap());
-
-	kacheln[3]->setPixmap(kacheln[6]->pixmap());
-	kacheln[4]->setPixmap(kacheln[7]->pixmap());
-	kacheln[5]->setPixmap(kacheln[8]->pixmap());
-
-	downl[6]->ladeKachel(zoom,xkoord-1,ykoord+1,6);
-	connect(downl[6], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[7]->ladeKachel(zoom,xkoord,ykoord+1,7);
-	connect(downl[7], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[8]->ladeKachel(zoom,xkoord+1,ykoord+1,8);
-	connect(downl[8], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-	*/}
+	}
 
 
 void MainWindow::geheOsten()
 	{
 	xkoord=xkoord+1;
 
-	setzeKarteNeu(zoom, xkoord, ykoord);
+	for(int i=0;i<seitenlaenge;i++)
+		{
+		kacheln[perm[i*seitenlaenge]]->moveBy(seitenlaenge*256,0);
+		kacheln[perm[i*seitenlaenge]]->setPixmap(QPixmap(256,256));
 
-	/*kacheln[2]->setPixmap(kacheln[1]->pixmap());
-	kacheln[5]->setPixmap(kacheln[4]->pixmap());
-	kacheln[8]->setPixmap(kacheln[7]->pixmap());
+		perm[anzahlKacheln+i]=perm[i*seitenlaenge];
+		}
 
-	kacheln[1]->setPixmap(kacheln[0]->pixmap());
-	kacheln[4]->setPixmap(kacheln[3]->pixmap());
-	kacheln[7]->setPixmap(kacheln[6]->pixmap());
+	for(int j=0;j<seitenlaenge-1;j++)
+		{
+		for(int i=0;i<seitenlaenge;i++)
+			{
+			perm[i*seitenlaenge+j]=perm[i*seitenlaenge+j+1];
+			}
+		}
 
-	downl[0]->ladeKachel(zoom,xkoord-1,ykoord-1,0);
-	connect(downl[0], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
+	for(int i=1;i<=seitenlaenge;i++)
+		{
+		perm[i*seitenlaenge-1]=perm[anzahlKacheln+i-1];
+		}
 
-	downl[3]->ladeKachel(zoom,xkoord-1,ykoord,3);
-	connect(downl[3], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-
-	downl[6]->ladeKachel(zoom,xkoord-1,ykoord+1,6);
-	connect(downl[6], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-	*/}
+	int ersteStelleInZeile=((sichtbaresFeld)*seitenlaenge)+2*sichtbaresFeld-1;
+	for(int i=0;i<sichtbaresFeld;i++)
+		{
+		downl[perm[ersteStelleInZeile+i*seitenlaenge]]->ladeKachel(zoom,xkoord+(sichtbaresFeld/2),ykoord+(i-sichtbaresFeld/2),perm[ersteStelleInZeile+i*seitenlaenge]);
+		}
+	}
 
 
 void MainWindow::geheWesten()
 	{
 	xkoord=xkoord-1;
 
-	setzeKarteNeu(zoom, xkoord, ykoord);
+	for(int i=1;i<=seitenlaenge;i++)
+		{
+		std::cout<<i*seitenlaenge-1<<std::endl;
+		kacheln[perm[i*seitenlaenge-1]]->moveBy(seitenlaenge*(-256),0);
+		kacheln[perm[i*seitenlaenge-1]]->setPixmap(QPixmap(256,256));
 
-	/*kacheln[0]->setPixmap(kacheln[1]->pixmap());
-	kacheln[3]->setPixmap(kacheln[4]->pixmap());
-	kacheln[6]->setPixmap(kacheln[7]->pixmap());
+		perm[anzahlKacheln+i-1]=perm[i*seitenlaenge-1];
+		}
 
-	kacheln[1]->setPixmap(kacheln[2]->pixmap());
-	kacheln[4]->setPixmap(kacheln[5]->pixmap());
-	kacheln[7]->setPixmap(kacheln[8]->pixmap());
+	for(int j=seitenlaenge-1;j>0;j--)
+		{
+		for(int i=0;i<seitenlaenge;i++)
+			{
+			perm[i*seitenlaenge+j]=perm[i*seitenlaenge+j-1];
+			}
+		}
 
-	downl[2]->ladeKachel(zoom,xkoord+1,ykoord-1,2);
-	connect(downl[2], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
+	for(int i=0;i<seitenlaenge;i++)
+		{
+		perm[i*seitenlaenge]=perm[anzahlKacheln+i];
+		}
 
-	downl[5]->ladeKachel(zoom,xkoord+1,ykoord,5);
-	connect(downl[5], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
+	int ersteStelleInZeile=((sichtbaresFeld)*seitenlaenge)+sichtbaresFeld;
+	for(int i=0;i<sichtbaresFeld;i++)
+		{
+		downl[perm[ersteStelleInZeile+i*seitenlaenge]]->ladeKachel(zoom,xkoord-(sichtbaresFeld/2),ykoord+(i-sichtbaresFeld/2),perm[ersteStelleInZeile+i*seitenlaenge]);
+		}
+	}
 
-	downl[8]->ladeKachel(zoom,xkoord+1,ykoord+1,8);
-	connect(downl[8], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
-	*/}
 
 void MainWindow::zoomIn()
 	{
@@ -410,13 +316,43 @@ void MainWindow::bewegungTesten(bool jaOderNein, QPointF punkt)
 	{
 	if(jaOderNein)
 		{
-		mausDrag=punkt;
+		mausDrag=mausDrag+punkt;
 		qDebug()<<"Geklickt\n"<<mausDrag;
 		}
 	else
 		{
 		mausDrag=mausDrag-punkt;
 		qDebug()<<"Losgelassen\n"<<mausDrag;
+
+		if(mausDrag.x()<-256 || mausDrag.x()>256 || mausDrag.y()<-256 || mausDrag.y()>256)
+			{
+			while(mausDrag.x()<-256 || mausDrag.x()>256)
+				{
+				if(mausDrag.x()<0)
+					{
+					geheWesten();
+					mausDrag.setX(mausDrag.x()+256);
+					}
+				else
+					{
+					geheOsten();
+					mausDrag.setX(mausDrag.x()-256);
+					}
+				}
+			while(mausDrag.y()<-256 || mausDrag.y()>256)
+				{
+				if(mausDrag.y()<0)
+					{
+					geheNorden();
+					mausDrag.setY(mausDrag.y()+256);
+					}
+				else
+					{
+					geheSueden();
+					mausDrag.setY(mausDrag.y()-256);
+					}
+				}
+			}
 		}
 	}
 
