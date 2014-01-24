@@ -26,6 +26,7 @@ class Downloader : public QObject
 	virtual ~Downloader();
 
 	void ladeKachel(int, int, int, int);
+	QPixmap getPixmap();
 
 	signals:
 	void gedownloaded(QPixmap, int);

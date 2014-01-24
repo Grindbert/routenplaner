@@ -4,9 +4,6 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	{
-	//Hilfsvariablen setzen:
-	zaehler=0;
-
 	//Fenster anlegen:
 	setAttribute(Qt::WA_DeleteOnClose);
 	setGeometry(100, 100, 800, 600);	//Größe und Ort des "aufpoppens" festlegen
@@ -20,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	statuszeileAnlegen();
 
 	//alle Vektoren, die für die Kacheln sind, auf Länge 9 setzen:
-	sichtbaresFeld=5;
+	sichtbaresFeld=7;
 	seitenlaenge=3*sichtbaresFeld;
 	anzahlKacheln=seitenlaenge*seitenlaenge;
 	mausDrag=QPointF(0,0);
@@ -43,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	ykoord=1313;
 
 	//Karte vom Startpunkt laden:
-	starteKarte(zoom, xkoord, ykoord);
+	starteKarte();
 
 	//Buttons und Zeug aus dem Widgetcontainer mit Funktionen connecten:
 	connect(widget->getButton(0), SIGNAL(clicked()), this, SLOT(geheNorden()));
@@ -61,8 +58,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	connect(widget->getView()->scene(), SIGNAL(linkeMaustasteGedruckt(bool,QPointF)), this, SLOT(bewegungTesten(bool,QPointF)));
 	connect(widget->getView()->scene(), SIGNAL(linkeMaustasteLoslassen(bool,QPointF)), this, SLOT(bewegungTesten(bool,QPointF)));
 
-	//anderes Hilfszeug:
-
 	}
 
 
@@ -72,23 +67,32 @@ MainWindow::~MainWindow()
 
 //Karte am Startpunkt laden, und Downloader so connecten, dass Kachel gleich in
 //die Szene getan werden:
-void MainWindow::starteKarte(int z, int x, int y)
+void MainWindow::starteKarte()
 	{
 	for(int i=0; i<anzahlKacheln; i++)
 		{
 		connect(downl[i], SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(pixmapAdden(QPixmap, int)));
 		}
 
+	Downloader *weisseKachelDownl=new Downloader();
+	connect(weisseKachelDownl, SIGNAL(gedownloaded(QPixmap, int)), this, SLOT(starteKarteFortsetzung(QPixmap)));
+	weisseKachelDownl->ladeKachel(8,200,255,0);
+	}
+
+
+void MainWindow::starteKarteFortsetzung(QPixmap pixmap)
+	{
+	weisseKachel=pixmap;
 	for(int i=0;i<seitenlaenge;i++)
 		{
 		for(int j=0;j<seitenlaenge;j++)
 			{
-			kacheln[(i*seitenlaenge)+j]=widget->getView()->scene()->addPixmap(QPixmap(256,256));
+			kacheln[(i*seitenlaenge)+j]=widget->getView()->scene()->addPixmap(weisseKachel);
 			kacheln[(i*seitenlaenge)+j]->setOffset(QPoint((j-seitenlaenge/2)*256,(i-seitenlaenge/2)*256));
 			}
 		}
 
-	setzeKarteNeu(z, x, y);
+	setzeKarteNeu(zoom, xkoord, ykoord);
 	}
 
 
@@ -156,7 +160,7 @@ void MainWindow::geheNorden()
 		for(int i=anzahlKacheln-seitenlaenge;i<anzahlKacheln;i++)
 			{
 			kacheln[perm[i]]->moveBy(0,seitenlaenge*(-256));
-			kacheln[perm[i]]->setPixmap(QPixmap(256,256));
+			kacheln[perm[i]]->setPixmap(weisseKachel);
 
 			perm[i+seitenlaenge]=perm[i];
 			}
@@ -191,7 +195,7 @@ void MainWindow::geheSueden()
 		for(int i=0;i<seitenlaenge;i++)
 			{
 			kacheln[perm[i]]->moveBy(0,seitenlaenge*256);
-			kacheln[perm[i]]->setPixmap(QPixmap(256,256));
+			kacheln[perm[i]]->setPixmap(weisseKachel);
 
 			perm[anzahlKacheln+i]=perm[i];
 			}
@@ -219,7 +223,7 @@ void MainWindow::geheOsten()
 	for(int i=0;i<seitenlaenge;i++)
 		{
 		kacheln[perm[i*seitenlaenge]]->moveBy(seitenlaenge*256,0);
-		kacheln[perm[i*seitenlaenge]]->setPixmap(QPixmap(256,256));
+		kacheln[perm[i*seitenlaenge]]->setPixmap(weisseKachel);
 
 		perm[anzahlKacheln+i]=perm[i*seitenlaenge];
 		}
@@ -251,9 +255,8 @@ void MainWindow::geheWesten()
 
 	for(int i=1;i<=seitenlaenge;i++)
 		{
-		std::cout<<i*seitenlaenge-1<<std::endl;
 		kacheln[perm[i*seitenlaenge-1]]->moveBy(seitenlaenge*(-256),0);
-		kacheln[perm[i*seitenlaenge-1]]->setPixmap(QPixmap(256,256));
+		kacheln[perm[i*seitenlaenge-1]]->setPixmap(weisseKachel);
 
 		perm[anzahlKacheln+i-1]=perm[i*seitenlaenge-1];
 		}
@@ -317,12 +320,12 @@ void MainWindow::bewegungTesten(bool jaOderNein, QPointF punkt)
 	if(jaOderNein)
 		{
 		mausDrag=mausDrag+punkt;
-		qDebug()<<"Geklickt\n"<<mausDrag;
+		//qDebug()<<"Geklickt\n"<<mausDrag;
 		}
 	else
 		{
 		mausDrag=mausDrag-punkt;
-		qDebug()<<"Losgelassen\n"<<mausDrag;
+		//qDebug()<<"Losgelassen\n"<<mausDrag;
 
 		if(mausDrag.x()<-256 || mausDrag.x()>256 || mausDrag.y()<-256 || mausDrag.y()>256)
 			{

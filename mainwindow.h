@@ -32,6 +32,7 @@ class MainWindow : public QMainWindow
 	int sichtbaresFeld;
 	int seitenlaenge;
 	int anzahlKacheln;
+	QPixmap weisseKachel;
 	QMenu* fileMenu;	//Menüleiste
 	QLabel* statusLabel;	//kommt in die Statuszeile
 	Widgets* widget;	//Widgetcontainer
@@ -57,7 +58,7 @@ class MainWindow : public QMainWindow
 	private:
 	void menuAnlegen();
 	void statuszeileAnlegen();
-	void starteKarte(int, int, int);
+	void starteKarte();
 	void setzeKarteNeu(int, int, int);
 
 
@@ -73,14 +74,7 @@ class MainWindow : public QMainWindow
 	void wegBerechnen();
 	void rechteMaustasteGeklickt(QPointF);
 	void bewegungTesten(bool, QPointF);
-
-	//irgendwelche Hilfsvariablen, die noch weg sollen,
-	//aber zentral an einer Stelle stehen sollen
-
-	public:
-	int zaehler;
-
-	QPoint ziehhilfe;
+	void starteKarteFortsetzung(QPixmap);
 	};
 
 #endif // MAINWINDOW_H

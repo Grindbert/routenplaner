@@ -60,3 +60,8 @@ void Downloader::fileDownloaded(QNetworkReply* pReply)
 	//gib Laut, wenn du fertig bist:
 	emit gedownloaded(*meinePixmap, stelleInSzene);
 	}
+
+QPixmap Downloader::getPixmap()
+	{
+	return(*meinePixmap);
+	}
