@@ -104,14 +104,19 @@ QPushButton* Widgets::getButton(int nummer /*enum button*/)
 	}
 
 
-QGraphicsEllipseItem* Widgets::koordSetzen(QPointF punkt,int x, int y, int z)
+/*QGraphicsEllipseItem* Widgets::koordSetzen(QPointF punkt,int x, int y, int z)
 	{
 	xKoordLabel->setText("lon: "+QString::number(punkt.x()));
 	yKoordLabel->setText("lat: "+QString::number(punkt.y()));
-	double tilex=long2tile(punkt.x(),z);
-	double tiley=lat2tile(punkt.y(),z);
-	//std::cout<<tilex<<" "<<tiley<<"\n";
-	//std::cout<<x<<" "<<y<<" "<<z<<"\n";
-	//std::cout<<(tilex-(double)x)<<" "<<(tiley-y)*256<<"\n\n";
-	return(graphicsView->scene()->addEllipse((tilex-x)*256,(tiley-y)*256,4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
+
+	//double tilex=long2tile(punkt.x(),z);
+	//double tiley=lat2tile(punkt.y(),z);
+
+	//return(graphicsView->scene()->addEllipse((tilex-x)*256,(tiley-y)*256,4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
+	}*/
+
+void Widgets::koordSetzen(QPointF punkt)
+	{
+	xKoordLabel->setText("lon: "+QString::number(punkt.x()));
+	yKoordLabel->setText("lat: "+QString::number(punkt.y()));
 	}

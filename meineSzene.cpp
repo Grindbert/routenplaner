@@ -1,8 +1,17 @@
 #include "meineSzene.h"
 
+
 MeineSzene::MeineSzene() : QGraphicsScene()
 {
 }
+
+
+void MeineSzene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+	{
+	QPointF punkt=event->scenePos();
+	emit mausBewegt(punkt);
+	}
+
 
 void MeineSzene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	{
@@ -13,7 +22,7 @@ void MeineSzene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		}
 	if(event->button()==Qt::LeftButton)
 		{
-		QPointF startpunkt=QCursor::pos();//event->scenePos();
+		QPointF startpunkt=QCursor::pos();
 		emit linkeMaustasteGedruckt(true, startpunkt);
 		}
 	}
@@ -25,6 +34,19 @@ void MeineSzene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 		{
 		QPointF endpunkt=QCursor::pos();//event->scenePos();
 		emit linkeMaustasteLoslassen(false, endpunkt);
+		}
+	}
+
+
+void MeineSzene::wheelEvent(QGraphicsSceneWheelEvent *event)
+	{
+	if(event->delta()>0)
+		{
+		emit zoomInSignal(event->scenePos());
+		}
+	else if(event->delta()<0)
+		{
+		emit zoomOutSignal(event->scenePos());
 		}
 	}
 

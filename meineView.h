@@ -20,7 +20,7 @@ class MeineView : public QGraphicsView
 
 	public:
 	MeineView(QGraphicsScene*);
-	virtual void wheelEvent(QWheelEvent*);
+	//virtual void wheelEvent(QWheelEvent*);
 
 	signals:
 	void zoomInSignal();

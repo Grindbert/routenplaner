@@ -13,21 +13,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	widget = new Widgets(this);	//Widgetcontainer anlegen
 	setCentralWidget(widget);
 
+	//sollte selbsterklärend sein:
 	menuAnlegen();
 	statuszeileAnlegen();
 
-	//alle Vektoren, die für die Kacheln sind, auf Länge 9 setzen:
-	sichtbaresFeld=7;
-	seitenlaenge=3*sichtbaresFeld;
-	anzahlKacheln=seitenlaenge*seitenlaenge;
-	mausDrag=QPointF(0,0);
+	//Feldgröße festlegen und merken (sehr nützlich zum navigieren im Kachelgitter):
+	sichtbaresFeld=7;	//Kachenl, die in der View sichtbar sind
+	seitenlaenge=3*sichtbaresFeld;	//Seitenlänge des gesamten Kachelgitters
+	anzahlKacheln=seitenlaenge*seitenlaenge;	//Gesamtzahl Kacheln, nützlich
+					//für das resizen der ganzen Vektoren
+
+	//Punkte für die leichtere Naviation in der Szene festlegen:
+	mausDrag=QPointF(0,0);		//prüft, wie sich die Maus bewegt hat, um bei
+					//entsprechenden Änderungen Kacheln nachzuladen
+	korrigierteSzene=QPoint(0,0);	//merkt sich bei Bewegungen die obere
+					//linke Ecke der mittleren Kachel, um besser in der Szene
+					//navigieren zu können
+
+	//alle Vektoren, die für die Kacheln sind, auf entsprechende Länge setzen:
 	kacheln.resize(anzahlKacheln);
-	perm.resize(anzahlKacheln+seitenlaenge);
+	perm.resize(anzahlKacheln+seitenlaenge);	//das "+seitenlaenge" ist, damit
+					//Platz ist, um sich Nummern beim Bewegen in eine Himmelsrichtung
+					//zu merken und zwischenzuspeichern
 	for(unsigned int i=0;i<perm.size();i++)
 		{
 		perm[i]=i;
 		}
-	//pixmaps.resize(anzahlKacheln);
+
 	downl.resize(anzahlKacheln);
 	for(unsigned int i = 0; i<downl.size(); i++)		//die 9 Downloader (einer für jede
 		{							//Kachel einen) anlegen
@@ -47,17 +59,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	connect(widget->getButton(1), SIGNAL(clicked()), this, SLOT(geheSueden()));
 	connect(widget->getButton(2), SIGNAL(clicked()), this, SLOT(geheOsten()));
 	connect(widget->getButton(3), SIGNAL(clicked()), this, SLOT(geheWesten()));
-	connect(widget->getButton(4), SIGNAL(clicked()), this, SLOT(zoomIn()));
-	connect(widget->getButton(5), SIGNAL(clicked()), this, SLOT(zoomOut()));
+	//connect(widget->getButton(4), SIGNAL(clicked()), this, SLOT(zoomIn()));
+	//connect(widget->getButton(5), SIGNAL(clicked()), this, SLOT(zoomOut()));
 
-	connect(widget->getView(), SIGNAL(zoomInSignal()), this, SLOT(zoomIn()));
-	connect(widget->getView(), SIGNAL(zoomOutSignal()), this, SLOT(zoomOut()));
+	connect(widget->getView()->scene(), SIGNAL(zoomInSignal(QPointF)), this, SLOT(zoomIn(QPointF)));
+	connect(widget->getView()->scene(), SIGNAL(zoomOutSignal(QPointF)), this, SLOT(zoomOut(QPointF)));
 
 	connect(widget->getView()->scene(), SIGNAL(rechteMaustaste(QPointF)), this, SLOT(rechteMaustasteGeklickt(QPointF)));
 
 	connect(widget->getView()->scene(), SIGNAL(linkeMaustasteGedruckt(bool,QPointF)), this, SLOT(bewegungTesten(bool,QPointF)));
 	connect(widget->getView()->scene(), SIGNAL(linkeMaustasteLoslassen(bool,QPointF)), this, SLOT(bewegungTesten(bool,QPointF)));
 
+	connect(widget->getView()->scene(), SIGNAL(mausBewegt(QPointF)), this, SLOT(berechneKoordinaten(QPointF)));
+
+	//Maus-tracking einschalten, damit die Koordinaten der Maus live im Fenster
+	//angezeigt werden können:
+	widget->getView()->setMouseTracking(true);
 	}
 
 
@@ -156,6 +173,7 @@ void MainWindow::geheNorden()
 	if(ykoord>1)
 		{
 		ykoord=ykoord-1;
+		korrigierteSzene.setY(korrigierteSzene.y()-256);
 
 		for(int i=anzahlKacheln-seitenlaenge;i<anzahlKacheln;i++)
 			{
@@ -191,6 +209,7 @@ void MainWindow::geheSueden()
 	if(ykoord<(pow(2,zoom)-3))
 		{
 		ykoord=ykoord+1;
+		korrigierteSzene.setY(korrigierteSzene.y()+256);
 
 		for(int i=0;i<seitenlaenge;i++)
 			{
@@ -219,6 +238,7 @@ void MainWindow::geheSueden()
 void MainWindow::geheOsten()
 	{
 	xkoord=xkoord+1;
+	korrigierteSzene.setX(korrigierteSzene.x()+256);
 
 	for(int i=0;i<seitenlaenge;i++)
 		{
@@ -252,6 +272,7 @@ void MainWindow::geheOsten()
 void MainWindow::geheWesten()
 	{
 	xkoord=xkoord-1;
+	korrigierteSzene.setX(korrigierteSzene.x()-256);
 
 	for(int i=1;i<=seitenlaenge;i++)
 		{
@@ -282,24 +303,53 @@ void MainWindow::geheWesten()
 	}
 
 
-void MainWindow::zoomIn()
+void MainWindow::zoomIn(QPointF punkt)
 	{
 	if(zoom<=18)
 		{
+		double lo=tilex2long(xkoord,zoom);
+		lo=lo+((tilex2long(xkoord+1,zoom)-lo)/256)*(punkt.x()-korrigierteSzene.x());
+		double la=tiley2lat(ykoord,zoom);
+		la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*(punkt.y()-korrigierteSzene.y());
+
 		zoom=zoom+1;
-		xkoord=xkoord*2;
-		ykoord=ykoord*2;
+		xkoord=(int)floor(long2tile(lo,zoom));
+		ykoord=(int)floor(lat2tile(la,zoom));
+		//xkoord=xkoord*2;
+		//ykoord=ykoord*2;
+
+		widget->getView()->centerOn(QPointF(korrigierteSzene.x()+128,korrigierteSzene.y()+128)/*kacheln[perm[anzahlKacheln/2]]*/);
+
+		for(int i=0;i<seitenlaenge;i++)
+			{
+			for(int j=0;j<seitenlaenge;j++)
+				{
+				kacheln[perm[i*seitenlaenge+j]]->setPixmap(weisseKachel);
+				}
+			}
+
 		setzeKarteNeu(zoom, xkoord, ykoord);
 		}
 	}
 
-void MainWindow::zoomOut()
+void MainWindow::zoomOut(QPointF punkt)
 	{
 	if(zoom>2)
 		{
 		zoom=zoom-1;
 		xkoord=xkoord/2;
 		ykoord=ykoord/2;
+
+		widget->getView()->centerOn(kacheln[perm[anzahlKacheln/2]]);
+
+		for(int i=0;i<seitenlaenge;i++)
+			{
+			for(int j=0;j<seitenlaenge;j++)
+				{
+				kacheln[perm[i*seitenlaenge+j]]->setPixmap(weisseKachel);
+				}
+			}
+
 		setzeKarteNeu(zoom, xkoord, ykoord);
 		}
 	}
@@ -307,11 +357,22 @@ void MainWindow::zoomOut()
 
 void MainWindow::rechteMaustasteGeklickt(QPointF punkt)
 	{
-	double lo=tilex2long(xkoord,zoom);
+	qDebug()<<punkt;
+	/*double lo=tilex2long(xkoord,zoom);
 	lo=lo+((tilex2long(xkoord+1,zoom)-lo)/256)*punkt.x();
 	double la=tiley2lat(ykoord,zoom);
-	la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*punkt.y();
-	punktvkt.push_back(widget->koordSetzen(QPointF(lo,la),xkoord,ykoord,zoom));
+	la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*punkt.y();*/
+	//punktvkt.push_back(widget->koordSetzen(QPointF(lo,la),xkoord,ykoord,zoom));
+	}
+
+
+void MainWindow::berechneKoordinaten(QPointF punkt)
+	{
+	double lo=tilex2long(xkoord,zoom);
+	lo=lo+((tilex2long(xkoord+1,zoom)-lo)/256)*(punkt.x()-korrigierteSzene.x());
+	double la=tiley2lat(ykoord,zoom);
+	la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*(punkt.y()-korrigierteSzene.y());
+	widget->koordSetzen(QPointF(lo,la));
 	}
 
 

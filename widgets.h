@@ -43,7 +43,8 @@ class Widgets : public QWidget
 
 	public:
 	explicit Widgets(QMainWindow *parent = 0);
-	QGraphicsEllipseItem* koordSetzen(QPointF,int,int,int);
+	//QGraphicsEllipseItem* koordSetzen(QPointF,int,int,int);
+	void koordSetzen(QPointF);
 
 	MeineView* getView();
 	QPushButton* getButton(int /*enum button*/);
