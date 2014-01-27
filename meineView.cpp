@@ -3,15 +3,7 @@
 MeineView::MeineView(QGraphicsScene* scene) : QGraphicsView(scene)
 {}
 
-/*void MeineView::wheelEvent(QWheelEvent* event)
+void MeineView::resizeEvent(QResizeEvent *event)
 	{
-	if(event->delta()>0)
-		{
-		emit zoomInSignal();
-		}
-	else if(event->delta()<0)
-		{
-		emit zoomOutSignal();
-		}
-	}*/
-
+	emit resized();
+	}

@@ -1,7 +1,5 @@
 #include "downloader.h"
 
-#include <iostream>
-
 Downloader::Downloader(QObject *parent) :
 	QObject(parent)
 	{

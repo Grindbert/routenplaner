@@ -32,7 +32,7 @@ void MeineSzene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	{
 	if(event->button()==Qt::LeftButton)
 		{
-		QPointF endpunkt=QCursor::pos();//event->scenePos();
+		QPointF endpunkt=QCursor::pos();
 		emit linkeMaustasteLoslassen(false, endpunkt);
 		}
 	}

@@ -16,12 +16,12 @@
 #include <stdlib.h>
 #include <vector>
 
-#include "widgets.h"
+#include "widgets.h"	//für den Widgetcontainer
 #include "downloader.h"
 #include "Knoten.h"		//Klasse Knoten einbinden
 #include "Wegfindung.h"	//Dijkstra-Algorithmus
 #include "Timer.h"
-#include "funktionen.h"
+#include "funktionen.h"	//für Umrechnung von Pixel in Koordinaten
 
 #include <iostream>
 
@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow
 	{
 	Q_OBJECT
 
+	//===============================================
 	//Variablen, die das Mainwindow hat:
 	//===============================================
 
@@ -65,8 +66,18 @@ class MainWindow : public QMainWindow
 	QPointF mausDrag;
 	QPoint korrigierteSzene;
 
+	//Objekte für das Rechtsklickmenü:
+	QMenu rechtsklickmenu;
+	QPointF rechtsklickPunkt;
+
+	QPointF startpunkt;
+	QPointF zielpunkt;
+	bool startpunktExistiert;
+	bool zielpunktExistiert;
 
 
+
+	//=========================================================
 	//Funktionen, Signale und Slots:
 	//=========================================================
 
@@ -77,24 +88,37 @@ class MainWindow : public QMainWindow
 	private:
 	void menuAnlegen();
 	void statuszeileAnlegen();
+	void rechtsklickmenuAnlegen();
 	void starteKarte();
 	void setzeKarteNeu(int, int, int);
 
 
 	private slots:
+	void starteKarteFortsetzung(QPixmap);
 	void pixmapAdden(QPixmap, int);
+	void karteZentrieren();
+
 	void geheNorden();
 	void geheSueden();
 	void geheOsten();
 	void geheWesten();
+
+	void geheNordenButton();
+	void geheSuedenButton();
+	void geheOstenButton();
+	void geheWestenButton();
+
 	void zoomIn(QPointF);
 	void zoomOut(QPointF);
-	void graphLaden();
-	void wegBerechnen();
+
+	void rechteMaustasteGeklickt(QPointF);
 	void berechneKoordinaten(QPointF);
 	void bewegungTesten(bool, QPointF);
-	void starteKarteFortsetzung(QPixmap);
-	void rechteMaustasteGeklickt(QPointF);
+
+	void graphLaden();
+	void wegBerechnen();
+	void startFestlegen();
+	void zielFestlegen();
 	};
 
 #endif // MAINWINDOW_H

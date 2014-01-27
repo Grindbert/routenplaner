@@ -35,11 +35,7 @@ class Downloader : public QObject
 	void fileDownloaded(QNetworkReply* pReply);
 
 	public:
-	//QByteArray zwischenablage;
-	//NetworkError bla;
 	};
 
 
 #endif // DOWNLOADER_H
-
-

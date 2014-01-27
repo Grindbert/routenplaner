@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	//sollte selbsterklärend sein:
 	menuAnlegen();
 	statuszeileAnlegen();
+	rechtsklickmenuAnlegen();
 
 	//Feldgröße festlegen und merken (sehr nützlich zum navigieren im Kachelgitter):
 	sichtbaresFeld=7;	//Kachenl, die in der View sichtbar sind
@@ -46,19 +47,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		downl[i]=new Downloader;
 		}
 
+	//Maus-tracking einschalten, damit die Koordinaten der Maus live im Fenster
+	//angezeigt werden können:
+	widget->getView()->setMouseTracking(true);
+
 	//Punkt, auf den die Karte beim Starten gesetzt wird, definieren:
 	zoom=12;
 	xkoord=2200;
 	ykoord=1313;
 
+	startpunktExistiert=false;
+	zielpunktExistiert=false;
+
 	//Karte vom Startpunkt laden:
 	starteKarte();
 
 	//Buttons und Zeug aus dem Widgetcontainer mit Funktionen connecten:
-	connect(widget->getButton(0), SIGNAL(clicked()), this, SLOT(geheNorden()));
-	connect(widget->getButton(1), SIGNAL(clicked()), this, SLOT(geheSueden()));
-	connect(widget->getButton(2), SIGNAL(clicked()), this, SLOT(geheOsten()));
-	connect(widget->getButton(3), SIGNAL(clicked()), this, SLOT(geheWesten()));
+	connect(widget->getButton(0), SIGNAL(clicked()), this, SLOT(geheNordenButton()));
+	connect(widget->getButton(1), SIGNAL(clicked()), this, SLOT(geheSuedenButton()));
+	connect(widget->getButton(2), SIGNAL(clicked()), this, SLOT(geheOstenButton()));
+	connect(widget->getButton(3), SIGNAL(clicked()), this, SLOT(geheWestenButton()));
 	//connect(widget->getButton(4), SIGNAL(clicked()), this, SLOT(zoomIn()));
 	//connect(widget->getButton(5), SIGNAL(clicked()), this, SLOT(zoomOut()));
 
@@ -72,15 +80,63 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	connect(widget->getView()->scene(), SIGNAL(mausBewegt(QPointF)), this, SLOT(berechneKoordinaten(QPointF)));
 
-	//Maus-tracking einschalten, damit die Koordinaten der Maus live im Fenster
-	//angezeigt werden können:
-	widget->getView()->setMouseTracking(true);
+	connect(widget->getView(), SIGNAL(resized()), this, SLOT(karteZentrieren()));
 	}
 
 
 MainWindow::~MainWindow()
 	{}
 
+
+//===================================================================
+//Funktionen um Menüs und Statuszeile anzulegen:
+//===================================================================
+void MainWindow::menuAnlegen()
+	{
+	//Datei-Menü:
+	fileMenu = menuBar()->addMenu(tr("&Datei"));
+
+	//Graph-laden-Button:
+	QAction *ladeGraph = new QAction(tr("&Graph laden"), this);
+	ladeGraph->setShortcut(tr("Ctrl+L"));
+	ladeGraph->setStatusTip(tr("lies Graph von Textdatei ein"));
+	fileMenu->addAction(ladeGraph);
+	connect(ladeGraph, SIGNAL(triggered()), this, SLOT(graphLaden()));
+
+	//Beenden-Button:
+	QAction *beenden = new QAction(tr("&Beenden"), this);
+	beenden->setShortcut(tr("Ctrl+T"));
+	beenden->setStatusTip(tr("Programm beenden"));
+	fileMenu->addAction(beenden);
+	// qApp ist globale Variable der Applikation
+	connect(beenden, SIGNAL(triggered()), qApp, SLOT(quit()));
+	}
+
+
+void MainWindow::statuszeileAnlegen()
+	{
+	statusLabel = new QLabel("Solange du das hier noch lesen kannst, ist alles in Ordnung! ;-)");
+	statusBar()->addWidget(statusLabel);
+	}
+
+
+void MainWindow::rechtsklickmenuAnlegen()
+	{
+	QAction *startpkt = new QAction(tr("&von hier starten"), this);
+	startpkt->setStatusTip(tr("setzt den Startpunkt für die Route hierher"));
+	rechtsklickmenu.addAction(startpkt);
+	connect(startpkt, SIGNAL(triggered()), this, SLOT(startFestlegen()));
+
+	QAction *zielpkt = new QAction(tr("&nach hier wollen"), this);
+	zielpkt->setStatusTip(tr("setzt den Startpunkt für die Route hierher"));
+	rechtsklickmenu.addAction(zielpkt);
+	connect(zielpkt, SIGNAL(triggered()), this, SLOT(zielFestlegen()));
+	}
+
+
+//===================================================================
+//Kartenfunktionen: initialisieren, neu setzen, Pixmaps hinzufügen:
+//===================================================================
 
 //Karte am Startpunkt laden, und Downloader so connecten, dass Kachel gleich in
 //die Szene getan werden:
@@ -113,6 +169,12 @@ void MainWindow::starteKarteFortsetzung(QPixmap pixmap)
 	}
 
 
+void MainWindow::pixmapAdden(QPixmap meinePix, int index)
+	{
+	kacheln[index]->setPixmap(meinePix);
+	}
+
+
 void MainWindow::setzeKarteNeu(int z, int x, int y)
 	{
 	int xDazu=-1*sichtbaresFeld/2;
@@ -133,41 +195,15 @@ void MainWindow::setzeKarteNeu(int z, int x, int y)
 	}
 
 
-void MainWindow::menuAnlegen()
+void MainWindow::karteZentrieren()
 	{
-	//Datei-Menü:
-	fileMenu = menuBar()->addMenu(tr("&Datei"));
-
-	//Graph-laden-Button:
-	QAction *ladeGraph = new QAction(tr("&Graph laden"), this);
-	ladeGraph->setShortcut(tr("Ctrl+L"));
-	ladeGraph->setStatusTip(tr("lies Graph von Textdatei ein"));
-	fileMenu->addAction(ladeGraph);
-	connect(ladeGraph, SIGNAL(triggered()), this, SLOT(graphLaden()));
-
-	//Beenden-Button:
-	QAction *beenden = new QAction(tr("&Beenden"), this);
-	beenden->setShortcut(tr("Ctrl+T"));
-	beenden->setStatusTip(tr("Programm beenden"));
-	fileMenu->addAction(beenden);
-	// qApp ist globale Variable der Applikation
-	connect(beenden, SIGNAL(triggered()), qApp, SLOT(quit()));
+	widget->getView()->centerOn(QPointF(korrigierteSzene.x()+128,korrigierteSzene.y()+128));
 	}
 
 
-void MainWindow::statuszeileAnlegen()
-	{
-	statusLabel = new QLabel("Solange du das hier noch lesen kannst, ist alles in Ordnung! ;-)");
-	statusBar()->addWidget(statusLabel);
-	}
-
-
-void MainWindow::pixmapAdden(QPixmap meinePix, int index)
-	{
-	kacheln[index]->setPixmap(meinePix);
-	}
-
-
+//====================================================================
+//Bewegungsfunktionen für die 4 Himmelsrichtungen:
+//====================================================================
 void MainWindow::geheNorden()
 	{
 	if(ykoord>1)
@@ -206,32 +242,39 @@ void MainWindow::geheNorden()
 
 void MainWindow::geheSueden()
 	{
-	if(ykoord<(pow(2,zoom)-3))
-		{
-		ykoord=ykoord+1;
-		korrigierteSzene.setY(korrigierteSzene.y()+256);
-
-		for(int i=0;i<seitenlaenge;i++)
+	//if(ykoord<(pow(2,zoom)-3))
+		//{
+		if(ykoord<(pow(2,zoom)-(sichtbaresFeld/2))-1)
 			{
-			kacheln[perm[i]]->moveBy(0,seitenlaenge*256);
-			kacheln[perm[i]]->setPixmap(weisseKachel);
+			ykoord=ykoord+1;
+			korrigierteSzene.setY(korrigierteSzene.y()+256);
 
-			perm[anzahlKacheln+i]=perm[i];
+			for(int i=0;i<seitenlaenge;i++)
+				{
+				kacheln[perm[i]]->moveBy(0,seitenlaenge*256);
+				kacheln[perm[i]]->setPixmap(weisseKachel);
+
+				perm[anzahlKacheln+i]=perm[i];
+				}
+
+			for(int i=0;i<anzahlKacheln;i++)
+				{
+				perm[i]=perm[i+seitenlaenge];
+				}
+
+			int ersteStelleInZeile=(((2*sichtbaresFeld)-1)*seitenlaenge);
+			int xDazu=-1*sichtbaresFeld/2;
+			for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
+				{
+				downl[perm[ersteStelleInZeile+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[ersteStelleInZeile+i]);
+				xDazu++;
+				}
 			}
-
-		for(int i=0;i<anzahlKacheln;i++)
+		else
 			{
-			perm[i]=perm[i+seitenlaenge];
+			widget->getView()->centerOn(QPointF(korrigierteSzene.x()+128,korrigierteSzene.y()+128));
 			}
-
-		int ersteStelleInZeile=(((2*sichtbaresFeld)-1)*seitenlaenge);
-		int xDazu=-1*sichtbaresFeld/2;
-		for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
-			{
-			downl[perm[ersteStelleInZeile+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[ersteStelleInZeile+i]);
-			xDazu++;
-			}
-		}
+		//}
 	}
 
 
@@ -303,6 +346,37 @@ void MainWindow::geheWesten()
 	}
 
 
+void MainWindow::geheNordenButton()
+	{
+	geheNorden();
+	karteZentrieren();
+	}
+
+
+void MainWindow::geheSuedenButton()
+	{
+	geheSueden();
+	karteZentrieren();
+	}
+
+
+void MainWindow::geheOstenButton()
+	{
+	geheOsten();
+	karteZentrieren();
+	}
+
+
+void MainWindow::geheWestenButton()
+	{
+	geheWesten();
+	karteZentrieren();
+	}
+
+
+//====================================================================
+//Zoomfunktionen:
+//====================================================================
 void MainWindow::zoomIn(QPointF punkt)
 	{
 	if(zoom<=18)
@@ -315,8 +389,6 @@ void MainWindow::zoomIn(QPointF punkt)
 		zoom=zoom+1;
 		xkoord=(int)floor(long2tile(lo,zoom));
 		ykoord=(int)floor(lat2tile(la,zoom));
-		//xkoord=xkoord*2;
-		//ykoord=ykoord*2;
 
 		widget->getView()->centerOn(QPointF(korrigierteSzene.x()+128,korrigierteSzene.y()+128)/*kacheln[perm[anzahlKacheln/2]]*/);
 
@@ -355,13 +427,25 @@ void MainWindow::zoomOut(QPointF punkt)
 	}
 
 
+//===================================================================
+//Spaß mit der Maus:
+//===================================================================
 void MainWindow::rechteMaustasteGeklickt(QPointF punkt)
 	{
-	qDebug()<<punkt;
 	/*double lo=tilex2long(xkoord,zoom);
-	lo=lo+((tilex2long(xkoord+1,zoom)-lo)/256)*punkt.x();
+	lo=lo+((tilex2long(xkoord+1,zoom)-lo)/256)*(punkt.x()-korrigierteSzene.x());
 	double la=tiley2lat(ykoord,zoom);
-	la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*punkt.y();*/
+	la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*(punkt.y()-korrigierteSzene.y());
+
+	punkt.setX(lo);
+	punkt.setY(la);
+
+	qDebug()<<punkt;*/
+
+	rechtsklickPunkt=punkt;
+	rechtsklickmenu.move(QCursor::pos());
+	rechtsklickmenu.show();
+
 	//punktvkt.push_back(widget->koordSetzen(QPointF(lo,la),xkoord,ykoord,zoom));
 	}
 
@@ -421,8 +505,9 @@ void MainWindow::bewegungTesten(bool jaOderNein, QPointF punkt)
 	}
 
 
-
-
+//=====================================================================
+//Graph: von Datei laden und Dijkstra
+//=====================================================================
 void MainWindow::graphLaden()
 	{
 	QString infile = QFileDialog::getOpenFileName(this, tr("Open Image"), "~", tr("All Files (*)"));
@@ -526,3 +611,17 @@ void MainWindow::wegBerechnen()
 	}
 
 
+void MainWindow::startFestlegen()
+	{
+	startpunkt=rechtsklickPunkt;
+	startpunktExistiert=true;
+	qDebug()<<startpunkt;
+	}
+
+
+void MainWindow::zielFestlegen()
+	{
+	zielpunkt=rechtsklickPunkt;
+	zielpunktExistiert=true;
+	qDebug()<<zielpunkt;
+	}

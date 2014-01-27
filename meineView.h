@@ -18,16 +18,15 @@ class MeineView : public QGraphicsView
 	{
 	Q_OBJECT
 
+	void resizeEvent(QResizeEvent*);
+
 	public:
 	MeineView(QGraphicsScene*);
-	//virtual void wheelEvent(QWheelEvent*);
 
 	signals:
+	void resized();
 	void zoomInSignal();
 	void zoomOutSignal();
-
-	//public slots:
-
 	};
 
 #endif // MEINEVIEW_H

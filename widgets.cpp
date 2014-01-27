@@ -6,23 +6,22 @@
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
 	//Button und Zeug links im Fenster anlegen:
-	//qdial=new QDial;
-	//qspinbox=new QSpinBox;
-	//test=new QPushButton("test");
+	xKoordLabel=new QLabel("lon: \nundefiniert");
+	yKoordLabel=new QLabel("lat: \nundefiniert");
 
-	//qdial->setNotchesVisible(true);
-	//qspinbox->setFont(QFont("Helvetica", 12, QFont::StyleNormal));
-
-	xKoordLabel=new QLabel("lon: undefiniert");
-	yKoordLabel=new QLabel("lat: undefiniert");
-
-	//Buttons:
-	nord=new QPushButton("/\\\n|");
-	sued=new QPushButton("|\nV");
-	ost=new QPushButton("-->");
-	west=new QPushButton("<--");
+	nord=new QPushButton("N");
+	sued=new QPushButton("S");
+	ost=new QPushButton("O");
+	west=new QPushButton("W");
 	zoomInButton=new QPushButton("+");
 	zoomOutButton=new QPushButton("-");
+
+	//Buttongröße beschränken:
+	int max=30;
+	nord->setMaximumWidth(max);
+	sued->setMaximumWidth(max);
+	ost->setMaximumWidth(max);
+	west->setMaximumWidth(max);
 
 	nord->setFont(QFont("Helvetica", 16, QFont::Normal));
 	sued->setFont(QFont("Helvetica", 16, QFont::Normal));
@@ -33,17 +32,14 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 
 	//Buttons ins Grid-Layout packen:
 	gridLayout = new QGridLayout(this);
-	gridLayout->addWidget(nord, 0, 0);
-	gridLayout->addWidget(sued, 1, 0);
-	gridLayout->addWidget(ost, 2, 0);
-	gridLayout->addWidget(west, 3, 0);
-	gridLayout->addWidget(zoomInButton, 4, 0);
-	gridLayout->addWidget(zoomOutButton, 5, 0);
-	gridLayout->addWidget(xKoordLabel, 6, 0);
-	gridLayout->addWidget(yKoordLabel, 7, 0);
-	//gridLayout->addWidget(qspinbox, 6, 0);
-	//gridLayout->addWidget(test, 6, 0);
-	//gridLayout->addWidget(qdial, 7, 0);
+	gridLayout->addWidget(nord, 0, 1);
+	gridLayout->addWidget(sued, 2, 1);
+	gridLayout->addWidget(ost, 1, 2);
+	gridLayout->addWidget(west, 1, 0);
+	gridLayout->addWidget(zoomInButton, 3, 0, 1, 3);
+	gridLayout->addWidget(zoomOutButton, 4, 0, 1, 3);
+	gridLayout->addWidget(xKoordLabel, 5, 0, 1, 3);
+	gridLayout->addWidget(yKoordLabel, 6, 0, 1, 3);
 
 	//Graphics-Scene anlegen und dem Grid-Layout hinzufügen:
 	MeineSzene *meineSzene = new MeineSzene;
@@ -57,10 +53,11 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 
 	//GraphicsView ins GridLayout packen:
-	gridLayout->addWidget(graphicsView, 0,1,8,1);
+	gridLayout->addWidget(graphicsView, 0,3,7,1);
 
 	//Spalten schön hinziehen, damit Buttons schmal und Karte groß:
-	gridLayout->setColumnStretch(1, 10);
+	//gridLayout->setColumnStretch(3, 20);
+
 	setLayout(gridLayout);
 
 	}
@@ -115,8 +112,9 @@ QPushButton* Widgets::getButton(int nummer /*enum button*/)
 	//return(graphicsView->scene()->addEllipse((tilex-x)*256,(tiley-y)*256,4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
 	}*/
 
+
 void Widgets::koordSetzen(QPointF punkt)
 	{
-	xKoordLabel->setText("lon: "+QString::number(punkt.x()));
-	yKoordLabel->setText("lat: "+QString::number(punkt.y()));
+	xKoordLabel->setText("lon: \n"+QString::number(punkt.x()));
+	yKoordLabel->setText("lat: \n"+QString::number(punkt.y()));
 	}
