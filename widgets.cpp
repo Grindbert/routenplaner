@@ -15,6 +15,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	west=new QPushButton("W");
 	zoomInButton=new QPushButton("+");
 	zoomOutButton=new QPushButton("-");
+	goButton=new QPushButton("Gogogo!!!");
 
 	//Buttongröße beschränken:
 	int max=30;
@@ -29,6 +30,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	west->setFont(QFont("Helvetica", 16, QFont::Normal));
 	zoomInButton->setFont(QFont("Helvetica", 16, QFont::Normal));
 	zoomOutButton->setFont(QFont("Helvetica", 16, QFont::Normal));
+	goButton->setFont(QFont("Helvetica", 16, QFont::Normal));
 
 	//Buttons ins Grid-Layout packen:
 	gridLayout = new QGridLayout(this);
@@ -38,8 +40,9 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->addWidget(west, 1, 0);
 	gridLayout->addWidget(zoomInButton, 3, 0, 1, 3);
 	gridLayout->addWidget(zoomOutButton, 4, 0, 1, 3);
-	gridLayout->addWidget(xKoordLabel, 5, 0, 1, 3);
-	gridLayout->addWidget(yKoordLabel, 6, 0, 1, 3);
+	gridLayout->addWidget(goButton,5,0,1,3);
+	gridLayout->addWidget(xKoordLabel, 6, 0, 1, 3);
+	gridLayout->addWidget(yKoordLabel, 7, 0, 1, 3);
 
 	//Graphics-Scene anlegen und dem Grid-Layout hinzufügen:
 	MeineSzene *meineSzene = new MeineSzene;
@@ -53,7 +56,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 
 	//GraphicsView ins GridLayout packen:
-	gridLayout->addWidget(graphicsView, 0,3,7,1);
+	gridLayout->addWidget(graphicsView, 0,3,8,1);
 
 	//Spalten schön hinziehen, damit Buttons schmal und Karte groß:
 	//gridLayout->setColumnStretch(3, 20);
@@ -93,24 +96,21 @@ QPushButton* Widgets::getButton(int nummer /*enum button*/)
 		case 5:
 			return(zoomOutButton);
 			break;
-		//case 6:
-		//	return(test);
-		//	break;
+		case 6:
+			return(goButton);
+			break;
 		}
 	//return(new QPushButton()); //gegen die Warnungen beim Kompilieren
 	}
 
 
-/*QGraphicsEllipseItem* Widgets::koordSetzen(QPointF punkt,int x, int y, int z)
+QGraphicsEllipseItem* Widgets::punktMalen(QPointF punkt, QPointF korrSz, int x, int y, int z)
 	{
-	xKoordLabel->setText("lon: "+QString::number(punkt.x()));
-	yKoordLabel->setText("lat: "+QString::number(punkt.y()));
+	double tilex=long2tile(punkt.x(),z);
+	double tiley=lat2tile(punkt.y(),z);
 
-	//double tilex=long2tile(punkt.x(),z);
-	//double tiley=lat2tile(punkt.y(),z);
-
-	//return(graphicsView->scene()->addEllipse((tilex-x)*256,(tiley-y)*256,4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
-	}*/
+	return(graphicsView->scene()->addEllipse((tilex-x)*256+korrSz.x(),(tiley-y)*256+korrSz.y(),4.5,4.5,QPen(Qt::blue),QBrush(Qt::blue)));
+	}
 
 
 void Widgets::koordSetzen(QPointF punkt)

@@ -37,13 +37,14 @@ class Widgets : public QWidget
 	QPushButton *west;
 	QPushButton *zoomInButton;
 	QPushButton *zoomOutButton;
+	QPushButton *goButton;
 
 	QLabel *xKoordLabel;
 	QLabel *yKoordLabel;
 
 	public:
 	explicit Widgets(QMainWindow *parent = 0);
-	//QGraphicsEllipseItem* koordSetzen(QPointF,int,int,int);
+	QGraphicsEllipseItem* punktMalen(QPointF,QPointF,int,int,int);
 	void koordSetzen(QPointF);
 
 	MeineView* getView();

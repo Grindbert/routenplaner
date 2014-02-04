@@ -5,8 +5,8 @@
 
 double long2tile(double, int);
 double lat2tile(double, int);
-double tilex2long(int x, int z);
-double tiley2lat(int y, int z);
+double tilex2long(int, int);
+double tiley2lat(int, int);
 
 
 #endif // FUNKTIONEN_H

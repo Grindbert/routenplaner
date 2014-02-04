@@ -11,12 +11,15 @@ class MeineSzene : public QGraphicsScene
 	{
 	Q_OBJECT
 
+	public:
+	MeineSzene();
+	MeineSzene(QGraphicsScene);
+
+	private:
 	void mouseMoveEvent(QGraphicsSceneMouseEvent*);
 	void wheelEvent(QGraphicsSceneWheelEvent*);
-
-	public:
-    MeineSzene();
-	MeineSzene(QGraphicsScene);
+	void mousePressEvent(QGraphicsSceneMouseEvent*);
+	void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
 
 	signals:
 	void zoomInSignal(QPointF);
@@ -25,10 +28,6 @@ class MeineSzene : public QGraphicsScene
 	void linkeMaustasteGedruckt(bool, QPointF);
 	void linkeMaustasteLoslassen(bool, QPointF);
 	void mausBewegt(QPointF);
-
-	private slots:
-	void mousePressEvent(QGraphicsSceneMouseEvent*);
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent*);
 	};
 
 #endif // MEINESZENE_H

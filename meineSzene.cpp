@@ -6,6 +6,8 @@ MeineSzene::MeineSzene() : QGraphicsScene()
 }
 
 
+//wenn die Maus über die Szene bewegt wird, soll ihr aktueller Punkt weitergegeben
+//werden, sodass die Längen- und Breitengrade im Mainwindow aktualisiert werden können:
 void MeineSzene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	{
 	QPointF punkt=event->scenePos();
@@ -13,6 +15,7 @@ void MeineSzene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	}
 
 
+//Wenn Maustasten gedrückt wurden, sollen entsprechende Signale gesendet werden:
 void MeineSzene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	{
 	if((event->button())==Qt::RightButton)
@@ -28,6 +31,8 @@ void MeineSzene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	}
 
 
+//das Loslassen der linken Maustaste ist für das Ziehen der Karte wichtig, daher
+//soll auch bei diesem Event ein Signal ausgesendet werden:
 void MeineSzene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	{
 	if(event->button()==Qt::LeftButton)
@@ -38,8 +43,12 @@ void MeineSzene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	}
 
 
+//Das wheelEvent soll zum Zoomen genutzt werden, daher sollen je nach Drehrichtung
+//des Mausrades entsprechende Signale ausgesendet werden soll:
 void MeineSzene::wheelEvent(QGraphicsSceneWheelEvent *event)
 	{
+	//(delta ist eine Variable des wheelEvents, das angibt, in welche Richtung das
+	//Mausrad gedreht wurde)
 	if(event->delta()>0)
 		{
 		emit zoomInSignal(event->scenePos());

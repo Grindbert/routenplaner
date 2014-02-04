@@ -10,6 +10,7 @@ Downloader::Downloader(QObject *parent) :
 Downloader::~Downloader()
 	{}
 
+//lädt die angeforderte Kachel aus dem Internet:
 void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 	{
 	stelleInSzene=stelleInSzeneEingabe;
@@ -25,7 +26,7 @@ void Downloader::ladeKachel(int z, int x, int y, int stelleInSzeneEingabe)
 	//Wenn x links aus der Weltkarte rausläuft, fange rechts wieder an:
 	if(xZumBearbeiten<0)
 		{
-		xZumBearbeiten=pow(2,z)+(xZumBearbeiten%((int)pow(2,z)));
+		xZumBearbeiten=pow(2,z)+((xZumBearbeiten+1)%((int)pow(2,z)))-1;
 		}
 
 	//Url für die angefragte Kachel zusammenbauen:
