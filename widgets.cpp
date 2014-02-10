@@ -6,8 +6,9 @@
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{
 	//Button und Zeug links im Fenster anlegen:
-	xKoordLabel=new QLabel("lon: \nundefiniert");
-	yKoordLabel=new QLabel("lat: \nundefiniert");
+	mausKoordLabel=new QLabel("Mauskoordinaten:\nlon: undefiniert\nlat: undefiniert");
+	startKoordLabel=new QLabel("Startkoordinaten:\nlon: undefiniert\nlat: undefiniert");
+	zielKoordLabel=new QLabel("Zielkoordinaten:\nlon: undefiniert\nlat: undefiniert");
 
 	nord=new QPushButton("N");
 	sued=new QPushButton("S");
@@ -41,8 +42,9 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	gridLayout->addWidget(zoomInButton, 3, 0, 1, 3);
 	gridLayout->addWidget(zoomOutButton, 4, 0, 1, 3);
 	gridLayout->addWidget(goButton,5,0,1,3);
-	gridLayout->addWidget(xKoordLabel, 6, 0, 1, 3);
-	gridLayout->addWidget(yKoordLabel, 7, 0, 1, 3);
+	gridLayout->addWidget(mausKoordLabel, 6, 0, 1, 3);
+	gridLayout->addWidget(startKoordLabel, 7, 0, 1, 3);
+	gridLayout->addWidget(zielKoordLabel, 8, 0, 1, 3);
 
 	//Graphics-Scene anlegen und dem Grid-Layout hinzufügen:
 	MeineSzene *meineSzene = new MeineSzene;
@@ -56,7 +58,7 @@ Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	graphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 
 	//GraphicsView ins GridLayout packen:
-	gridLayout->addWidget(graphicsView, 0,3,8,1);
+	gridLayout->addWidget(graphicsView, 0,3,9,1);
 
 	//Spalten schön hinziehen, damit Buttons schmal und Karte groß:
 	//gridLayout->setColumnStretch(3, 20);
@@ -113,8 +115,19 @@ QGraphicsEllipseItem* Widgets::punktMalen(QPointF punkt, QPointF korrSz, int x, 
 	}
 
 
-void Widgets::koordSetzen(QPointF punkt)
+void Widgets::mausKoordSetzen(QPointF punkt)
 	{
-	xKoordLabel->setText("lon: \n"+QString::number(punkt.x()));
-	yKoordLabel->setText("lat: \n"+QString::number(punkt.y()));
+	mausKoordLabel->setText("Mauskoordinaten:\nlon: "+QString::number(punkt.x())+"\nlat: "+QString::number(punkt.y()));
+	}
+
+
+void Widgets::startKoordSetzen(QPointF punkt)
+	{
+	startKoordLabel->setText("Startkoordinaten:\nlon: "+QString::number(punkt.x())+"\nlat: "+QString::number(punkt.y()));
+	}
+
+
+void Widgets::zielKoordSetzen(QPointF punkt)
+	{
+	zielKoordLabel->setText("Zielkoordinaten:\nlon: "+QString::number(punkt.x())+"\nlat: "+QString::number(punkt.y()));
 	}

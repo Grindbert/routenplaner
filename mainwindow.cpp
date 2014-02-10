@@ -596,7 +596,7 @@ void MainWindow::berechneKoordinaten(QPointF punkt)
 	la=la+((tiley2lat(ykoord+1,zoom)-la)/256)*(punkt.y()-korrigierteSzene.y());
 
 	//setze die Mauskoordinaten auf die eben berechneten:
-	widget->koordSetzen(QPointF(lo,la));
+	widget->mausKoordSetzen(QPointF(lo,la));
 	}
 
 
@@ -818,6 +818,7 @@ void MainWindow::startFestlegen()
 
 	startpunkt=QPointF(lo,la);	//setze den Startpunkt auf die Koordinaten
 	startpunktExistiert=true;	//merke dir, dass schon ein Startpunkt gewählt wurde
+	widget->startKoordSetzen(startpunkt);
 	}
 
 
@@ -833,6 +834,7 @@ void MainWindow::zielFestlegen()
 
 	zielpunkt=QPointF(lo,la);	//Koordinaten speichern
 	zielpunktExistiert=true;	//merken, dass Zielpunkt existiert
+	widget->zielKoordSetzen(zielpunkt);
 	}
 
 
