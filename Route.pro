@@ -17,7 +17,9 @@ SOURCES += main.cpp \
     meineSzene.cpp \
     funktionen.cpp \
     hilfefenster.cpp \
-    hilfewidget.cpp
+    hilfewidget.cpp \
+    wartefenster.cpp \
+    wartewidget.cpp
 HEADERS += mainwindow.h \
     widgets.h \
     downloader.h \
@@ -28,4 +30,6 @@ HEADERS += mainwindow.h \
     meineSzene.h \
     funktionen.h \
     hilfefenster.h \
-    hilfewidget.h
+    hilfewidget.h \
+    wartefenster.h \
+    wartewidget.h

@@ -7,13 +7,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	//Fenster anlegen:
 	setAttribute(Qt::WA_DeleteOnClose);
 	setGeometry(100, 100, 800, 600);	//Größe und Ort des "aufpoppens" festlegen
-	setWindowTitle("Bastis fantastischer Routenplaner");
+	setWindowTitle("Nicht tomtom, auch nicht HansHans, sondern BastiBasti ;-)");
 
 	//Widgets anlegen und im Fenster zentrieren:
 	widget = new Widgets(this);	//Widgetcontainer anlegen
 	setCentralWidget(widget);
 
 	hilfefenster = new Hilfefenster(this);
+	wartefenster = new Wartefenster(this);
 
 	//sollte selbsterklärend sein:
 	menuAnlegen();
@@ -701,6 +702,10 @@ void MainWindow::graphLaden()
 	//Dateipfad zurückgegeben und in "infile" aufgefangen:
 	QString infile = QFileDialog::getOpenFileName(this, tr("Open Image"), "~", tr("All Files (*)"));
 
+	//QString infile="/media/grindbert/Aeneon/Basti_C++/testdaten/mecklenburg-vorpommern-latest.gtxt";
+	//qDebug()<<infile;
+	//emit blubs();
+
 	//öffne InputFile:
 	std::ifstream meineDatei(infile.toStdString().c_str());
 
@@ -714,6 +719,8 @@ void MainWindow::graphLaden()
 
 	else
 		{
+		wartefenster->show();
+
 		//zum Speichern von Knoten- und Kantenzahl:
 		unsigned int knotenzahl=0;
 		unsigned int kantenzahl=0;
@@ -735,19 +742,25 @@ void MainWindow::graphLaden()
 
 		meineDatei>>kantenzahl;
 
+		wartefenster->setText("Knoten werden geladen...");
+
 		//Knoten einlesen:
 		for(unsigned int i = 0; i<knotenzahl; i++)	//lies [Knotenzahl] Zeilen der
 							//Datei aus und speichere sie als Knoten ab
 			{
+			wartefenster->setStatusBalken((i*100)/knotenzahl);
 			meineDatei>>x>>y;	//Koordinaten auslesen
 			(*knoten)[i].setzeKoord(x,y,i);	//Koordinaten und Knotennummer in den
 								//Vektor speichern
 			}
 
+		wartefenster->setText("Kanten werden geladen...");
+
 		//Kanten einlesen:
 		for(unsigned int i = 0; i<kantenzahl; i++)	//lies [Kantenzahl] Zeilen der
 							//Datei und speichere sie als Kanten in die Knoten
 			{
+			wartefenster->setStatusBalken((i*100)/kantenzahl);
 			meineDatei>>start>>ziel>>laenge;	//Parameter auslesen
 			(*knoten)[start].kanteHinzufuegen(&((*knoten)[ziel]),laenge);	//Kante
 							//in die Liste der ausgehenden Kanten des Startknotens
@@ -764,6 +777,9 @@ void MainWindow::graphLaden()
 
 		//merke dir, ob schon eine Graphdatei geladen wurde:
 		dateiGeladen=true;
+
+		//wartefenster->setText(" ");
+		//wartefenster->hide();
 		}
 	}
 
@@ -917,15 +933,22 @@ void MainWindow::routenNeuEinzeichnen()
 
 void MainWindow::optionen()
 	{
+	bool *ok = new bool();
 	QInputDialog *dialog = new QInputDialog();
-	int input = dialog->getInt(this, "Neuen Wert eingeben", "Bitte neuen Wert für die Anzahl\nder zu ladenden Kacheln\neingeben:\n(Standard ist 7, wenn das\nProgramm zu langsam ist,\nsollte ein kleinerer Wert\ngewählt werden)", 7, 3, 99, 1, 0);
+	int input = dialog->getInt(this, "Neuen Wert eingeben", "Bitte neuen Wert für die Anzahl\nder zu ladenden Kacheln\neingeben:\n(Standard ist 7, wenn das\nProgramm zu langsam ist,\nsollte ein kleinerer Wert\ngewählt werden)", 7, 3, 99, 1, ok);
 
-	if(input%2==0)
+	if(*ok)
 		{
-		input = input -1;
+		if(input%2==0)
+			{
+			input = input -1;
+			}
+		if(input!=sichtbaresFeld)
+			{
+			widget->getView()->scene()->clear();
+			kartenrasterAnlegen(input);
+			}
 		}
-	widget->getView()->scene()->clear();
-	kartenrasterAnlegen(input);
 	}
 
 

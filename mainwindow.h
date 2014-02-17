@@ -24,6 +24,7 @@
 #include "Timer.h"
 #include "funktionen.h"	//für Umrechnung von Pixel in Koordinaten
 #include "hilfefenster.h"
+#include "wartefenster.h"
 
 #include <iostream>
 
@@ -86,6 +87,7 @@ class MainWindow : public QMainWindow
 	bool dateiGeladen;		//speichert, ob schon eine Datei eingelesen wurde
 
 	Hilfefenster *hilfefenster;
+	Wartefenster *wartefenster;
 
 
 	//=========================================================
