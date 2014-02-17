@@ -15,6 +15,7 @@
 #include <sstream>	//stringstream
 #include <stdlib.h>
 #include <vector>
+#include <QInputDialog>
 
 #include "widgets.h"	//für den Widgetcontainer
 #include "downloader.h"
@@ -22,6 +23,7 @@
 #include "Wegfindung.h"	//Dijkstra-Algorithmus
 #include "Timer.h"
 #include "funktionen.h"	//für Umrechnung von Pixel in Koordinaten
+#include "hilfefenster.h"
 
 #include <iostream>
 
@@ -83,6 +85,7 @@ class MainWindow : public QMainWindow
 	bool zielpunktExistiert;	//speichert, ob schon ein Zielpunkt angegeben wurde
 	bool dateiGeladen;		//speichert, ob schon eine Datei eingelesen wurde
 
+	Hilfefenster *hilfefenster;
 
 
 	//=========================================================
@@ -94,6 +97,7 @@ class MainWindow : public QMainWindow
 	~MainWindow();
 
 	private:
+	void kartenrasterAnlegen(int);
 	void menuAnlegen();
 	void statuszeileAnlegen();
 	void rechtsklickmenuAnlegen();
@@ -132,6 +136,8 @@ class MainWindow : public QMainWindow
 	void startFestlegen();
 	void zielFestlegen();
 	void routenLoeschen();
+
+	void optionen();
 	};
 
 #endif // MAINWINDOW_H

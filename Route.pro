@@ -15,7 +15,9 @@ SOURCES += main.cpp \
     Wegfindung.cpp \
     Knoten.cpp \
     meineSzene.cpp \
-    funktionen.cpp
+    funktionen.cpp \
+    hilfefenster.cpp \
+    hilfewidget.cpp
 HEADERS += mainwindow.h \
     widgets.h \
     downloader.h \
@@ -24,4 +26,6 @@ HEADERS += mainwindow.h \
     Wegfindung.h \
     Knoten.h \
     meineSzene.h \
-    funktionen.h
+    funktionen.h \
+    hilfefenster.h \
+    hilfewidget.h

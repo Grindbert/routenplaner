@@ -1,7 +1,7 @@
 #include "widgets.h"
+#include "funktionen.h"
 
 #include <iostream>
-#include "funktionen.h"
 
 Widgets::Widgets(QMainWindow *parent) : QWidget(parent)
 	{

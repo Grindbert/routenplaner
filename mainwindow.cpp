@@ -13,45 +13,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	widget = new Widgets(this);	//Widgetcontainer anlegen
 	setCentralWidget(widget);
 
+	hilfefenster = new Hilfefenster(this);
+
 	//sollte selbsterklärend sein:
 	menuAnlegen();
 	statuszeileAnlegen();
 	rechtsklickmenuAnlegen();
 
-	//Feldgröße festlegen und merken (sehr nützlich zum navigieren im Kachelgitter):
-	sichtbaresFeld=7;	//Kachenl, die in der View sichtbar sind
-	seitenlaenge=3*sichtbaresFeld;	//Seitenlänge des gesamten Kachelgitters
-	anzahlKacheln=seitenlaenge*seitenlaenge;	//Gesamtzahl Kacheln, nützlich
-					//für das resizen der ganzen Vektoren
-
-	//Punkte für die leichtere Naviation in der Szene festlegen:
-	mausDrag=QPointF(0,0);		//prüft, wie sich die Maus bewegt hat, um bei
-					//entsprechenden Änderungen Kacheln nachzuladen
-	korrigierteSzene=QPoint(0,0);	//merkt sich bei Bewegungen die obere
-					//linke Ecke der mittleren Kachel, um besser in der Szene
-					//navigieren zu können
-
-	//alle Vektoren, die für die Kacheln sind, auf entsprechende Länge setzen:
-	kacheln.resize(anzahlKacheln);
-	perm.resize(anzahlKacheln+seitenlaenge);	//das "+seitenlaenge" ist, damit
-					//Platz ist, um sich Nummern beim Bewegen in eine Himmelsrichtung
-					//zu merken und zwischenzuspeichern
-	for(unsigned int i=0;i<perm.size();i++)
-		{
-		perm[i]=i;
-		}
-
-	downl.resize(anzahlKacheln);
-	for(unsigned int i = 0; i<downl.size(); i++)		//die 9 Downloader (einer für jede
-		{							//Kachel einen) anlegen
-		downl[i]=new Downloader;
-		}
-
+	//Vektor, der die Wegvektoren speichert, die der Dijkstra zurückgibt
 	vektorFurWegvektoren = new std::vector<std::vector<int> >;
-
-	//Maus-tracking einschalten, damit die Koordinaten der Maus live im Fenster
-	//angezeigt werden können:
-	widget->getView()->setMouseTracking(true);
 
 	//Punkt, auf den die Karte beim Starten gesetzt wird, definieren:
 	zoom=12;
@@ -62,8 +32,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	zielpunktExistiert=false;
 	dateiGeladen=false;
 
-	//Karte vom Startpunkt laden:
-	starteKarte();
+	//Maus-tracking einschalten, damit die Koordinaten der Maus live im Fenster
+	//angezeigt werden können:
+	widget->getView()->setMouseTracking(true);
 
 	//Buttons und Zeug aus dem Widgetcontainer mit Funktionen connecten:
 	//Richtungs- und Zoombuttons connecten:
@@ -92,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	connect(widget->getView(), SIGNAL(resized()), this, SLOT(karteZentrieren()));
 
 	connect(widget->getButton(6), SIGNAL(clicked()), this, SLOT(wegBerechnen()));
+
+	kartenrasterAnlegen(7);
 	}
 
 
@@ -102,6 +75,42 @@ MainWindow::~MainWindow()
 //===================================================================
 //Funktionen um Menüs und Statuszeile anzulegen:
 //===================================================================
+void MainWindow::kartenrasterAnlegen(int eingabe)
+	{
+	//Punkte für die leichtere Naviation in der Szene festlegen:
+	mausDrag=QPointF(0,0);		//prüft, wie sich die Maus bewegt hat, um bei
+					//entsprechenden Änderungen Kacheln nachzuladen
+	korrigierteSzene=QPoint(0,0);	//merkt sich bei Bewegungen die obere
+					//linke Ecke der mittleren Kachel, um besser in der Szene
+					//navigieren zu können
+
+	//Feldgröße festlegen und merken (sehr nützlich zum navigieren im Kachelgitter):
+	sichtbaresFeld=eingabe;	//Kachenl, die in der View sichtbar sind
+	seitenlaenge=3*sichtbaresFeld;	//Seitenlänge des gesamten Kachelgitters
+	anzahlKacheln=seitenlaenge*seitenlaenge;	//Gesamtzahl Kacheln, nützlich
+					//für das resizen der ganzen Vektoren
+
+	//alle Vektoren, die für die Kacheln sind, auf entsprechende Länge setzen:
+	kacheln.resize(anzahlKacheln);
+	perm.resize(anzahlKacheln+seitenlaenge);	//das "+seitenlaenge" ist, damit
+					//Platz ist, um sich Nummern beim Bewegen in eine Himmelsrichtung
+					//zu merken und zwischenzuspeichern
+	for(unsigned int i=0;i<perm.size();i++)
+		{
+		perm[i]=i;
+		}
+
+	downl.resize(anzahlKacheln);
+	for(unsigned int i = 0; i<downl.size(); i++)		//die 9 Downloader (einer für jede
+		{							//Kachel einen) anlegen
+		downl[i]=new Downloader;
+		}
+
+	//Karte vom Startpunkt laden:
+	starteKarte();
+	}
+
+
 void MainWindow::menuAnlegen()
 	{
 	//Datei-Menü:
@@ -113,6 +122,13 @@ void MainWindow::menuAnlegen()
 	ladeGraph->setStatusTip(tr("lies Graph von Textdatei ein"));
 	menuDatei->addAction(ladeGraph);
 	connect(ladeGraph, SIGNAL(triggered()), this, SLOT(graphLaden()));
+
+	//Einstellungen:
+	QAction *einstellung = new QAction(tr("&Einstellungen"), this);
+	einstellung->setShortcut(tr("Ctrl+E"));
+	einstellung->setStatusTip(tr("stellt die Anzahl der zu ladenden Kacheln ein"));
+	menuDatei->addAction(einstellung);
+	connect(einstellung, SIGNAL(triggered()), this, SLOT(optionen()));
 
 	//Beenden-Button:
 	QAction *beenden = new QAction(tr("&Beenden"), this);
@@ -148,7 +164,7 @@ void MainWindow::menuAnlegen()
 	hilfeAnzeigen->setShortcut(tr("Ctrl+H"));
 	hilfeAnzeigen->setStatusTip(tr("zeigt die Hilfe zum Programm an"));
 	menuHilfe->addAction(hilfeAnzeigen);
-	//connect(hilfeAnzeigen, SIGNAL(triggered()), this, SLOT(slot...));
+	connect(hilfeAnzeigen, SIGNAL(triggered()), hilfefenster, SLOT(show()));
 	}
 
 
@@ -222,6 +238,8 @@ void MainWindow::starteKarteFortsetzung(QPixmap pixmap)
 			kacheln[(i*seitenlaenge)+j]->setOffset(QPoint((j-seitenlaenge/2)*256,(i-seitenlaenge/2)*256));
 			}
 		}
+
+	karteZentrieren();
 
 	//rufe diese Funktion auf, um alle in der GraphicsView sichtbaren PixmapItems mit
 	//den der Zoomstufe und Koordinaten entsprechenden Kacheln zu besetzen:
@@ -321,44 +339,45 @@ void MainWindow::geheNorden()
 			xDazu++;
 			}
 		}
+	else
+		{
+		karteZentrieren();
+		}
 	}
 
 
 void MainWindow::geheSueden()
 	{
-	//if(ykoord<(pow(2,zoom)-3))
-		//{
-		if(ykoord<(pow(2,zoom)-(sichtbaresFeld/2))-1)
+	if(ykoord<pow(2,zoom)-1)
+		{
+		ykoord=ykoord+1;
+		korrigierteSzene.setY(korrigierteSzene.y()+256);
+
+		for(int i=0;i<seitenlaenge;i++)
 			{
-			ykoord=ykoord+1;
-			korrigierteSzene.setY(korrigierteSzene.y()+256);
+			kacheln[perm[i]]->moveBy(0,seitenlaenge*256);
+			kacheln[perm[i]]->setPixmap(weisseKachel);
 
-			for(int i=0;i<seitenlaenge;i++)
-				{
-				kacheln[perm[i]]->moveBy(0,seitenlaenge*256);
-				kacheln[perm[i]]->setPixmap(weisseKachel);
-
-				perm[anzahlKacheln+i]=perm[i];
-				}
-
-			for(int i=0;i<anzahlKacheln;i++)
-				{
-				perm[i]=perm[i+seitenlaenge];
-				}
-
-			int ersteStelleInZeile=(((2*sichtbaresFeld)-1)*seitenlaenge);
-			int xDazu=-1*sichtbaresFeld/2;
-			for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
-				{
-				downl[perm[ersteStelleInZeile+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[ersteStelleInZeile+i]);
-				xDazu++;
-				}
+			perm[anzahlKacheln+i]=perm[i];
 			}
-		else
+
+		for(int i=0;i<anzahlKacheln;i++)
 			{
-			widget->getView()->centerOn(QPointF(korrigierteSzene.x()+128,korrigierteSzene.y()+128));
+			perm[i]=perm[i+seitenlaenge];
 			}
-		//}
+
+		int ersteStelleInZeile=(((2*sichtbaresFeld)-1)*seitenlaenge);
+		int xDazu=-1*sichtbaresFeld/2;
+		for(int i=sichtbaresFeld;i<2*sichtbaresFeld;i++)
+			{
+			downl[perm[ersteStelleInZeile+i]]->ladeKachel(zoom,xkoord+xDazu,ykoord+(sichtbaresFeld/2),perm[ersteStelleInZeile+i]);
+			xDazu++;
+			}
+		}
+	else
+		{
+		karteZentrieren();
+		}
 	}
 
 
@@ -895,6 +914,19 @@ void MainWindow::routenNeuEinzeichnen()
 		}
 	}
 
+
+void MainWindow::optionen()
+	{
+	QInputDialog *dialog = new QInputDialog();
+	int input = dialog->getInt(this, "Neuen Wert eingeben", "Bitte neuen Wert für die Anzahl\nder zu ladenden Kacheln\neingeben:\n(Standard ist 7, wenn das\nProgramm zu langsam ist,\nsollte ein kleinerer Wert\ngewählt werden)", 7, 3, 99, 1, 0);
+
+	if(input%2==0)
+		{
+		input = input -1;
+		}
+	widget->getView()->scene()->clear();
+	kartenrasterAnlegen(input);
+	}
 
 
 //ToDo:
