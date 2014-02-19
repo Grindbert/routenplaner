@@ -5,7 +5,7 @@ Wartewidget::Wartewidget(QWidget *parent) : QWidget(parent)
 	label = new QLabel(" ");
 
 	balken = new QProgressBar();
-	balken->setValue(42);
+	balken->setValue(0);
 
 	grid = new QGridLayout(this);
 

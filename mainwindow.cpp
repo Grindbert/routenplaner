@@ -151,9 +151,9 @@ void MainWindow::menuAnlegen()
 	connect(routeBerechnen, SIGNAL(triggered()), this, SLOT(wegBerechnen()));
 
 	//alle eingezeichneten Routen aus der Karte wieder löschen:
-	QAction *routenWeg=new QAction(tr("&eingezeichnete Routen löschen"), this);
+	QAction *routenWeg=new QAction(trUtf8("&eingezeichnete Route(n) löschen"), this);
 	routenWeg->setShortcut(tr("Ctrl+B"));
-	routenWeg->setStatusTip(tr("löscht die eingezeichnete(n) Route(n)"));
+	routenWeg->setStatusTip(trUtf8("löscht die eingezeichnete(n) Route(n)"));
 	menuRoute->addAction(routenWeg);
 	connect(routenWeg, SIGNAL(triggered()), this, SLOT(routenLoeschen()));
 
@@ -702,10 +702,6 @@ void MainWindow::graphLaden()
 	//Dateipfad zurückgegeben und in "infile" aufgefangen:
 	QString infile = QFileDialog::getOpenFileName(this, tr("Open Image"), "~", tr("All Files (*)"));
 
-	//QString infile="/media/grindbert/Aeneon/Basti_C++/testdaten/mecklenburg-vorpommern-latest.gtxt";
-	//qDebug()<<infile;
-	//emit blubs();
-
 	//öffne InputFile:
 	std::ifstream meineDatei(infile.toStdString().c_str());
 
@@ -719,7 +715,7 @@ void MainWindow::graphLaden()
 
 	else
 		{
-		wartefenster->show();
+		wartefenster->show();	//öffnet das wartefenster
 
 		//zum Speichern von Knoten- und Kantenzahl:
 		unsigned int knotenzahl=0;
@@ -778,8 +774,8 @@ void MainWindow::graphLaden()
 		//merke dir, ob schon eine Graphdatei geladen wurde:
 		dateiGeladen=true;
 
-		//wartefenster->setText(" ");
-		//wartefenster->hide();
+		wartefenster->setText(" ");
+		wartefenster->hide();
 		}
 	}
 
@@ -790,18 +786,18 @@ void MainWindow::wegBerechnen()
 	if(!dateiGeladen)	//Wenn noch kein Graph eingelesen wurde, macht die Wegfindung
 						//nicht viel Sinn...
 		{
-		statusLabel->setText("Es wurde noch kein Graph geladen. Daher ist auch keine Berechnung möglich! :-(");
+		statusLabel->setText(trUtf8("Es wurde noch kein Graph geladen. Daher ist auch keine Berechnung möglich! :-("));
 		}
 
 	else if(!startpunktExistiert)	//wenn noch kein Startpunkt übergeben wurde,
 						//macht die Wegberechnung wiederum wenig Sinn...
 		{
-		statusLabel->setText("Es wurde kein Startpunkt angegeben! Keine Wegberechnung möglich :-(");
+		statusLabel->setText(trUtf8("Es wurde kein Startpunkt angegeben! Keine Wegberechnung möglich :-("));
 		}
 
 	else if(!zielpunktExistiert)	//ohne Zielpunkt genauso...
 		{
-		statusLabel->setText("Es wurde kein Zielpunkt angegeben! Keine Wegberechnung möglich :-(");
+		statusLabel->setText(trUtf8("Es wurde kein Zielpunkt angegeben! Keine Wegberechnung möglich :-("));
 		}
 
 	//wenn Start- und Zielpunkt vorhanden sind und eine Graphdatei eingelesen wurde,
@@ -823,6 +819,11 @@ void MainWindow::wegBerechnen()
 			{
 			statusLabel->setText("Solange du das hier noch lesen kannst, ist alles in Ordnung! ;-)");
 
+			if(((vektorFurWegvektoren->back()).size())==1)
+				{
+				statusLabel->setText(trUtf8("<font color='red'>Die eingegeben Start- und Zielpunkte sind identisch. Die Routenplanung ist hier trivial und wird dem Benutzer als Übungsaufgabe gelassen.</font>"));
+				}
+
 			for(int i = ((vektorFurWegvektoren->back()).size())-2; i>=0; i--)
 				{
 				int x1 = (long2tile((*knoten)[(vektorFurWegvektoren->back())[i]].x,zoom)-xkoord)*256+korrigierteSzene.x();
@@ -834,7 +835,7 @@ void MainWindow::wegBerechnen()
 			}
 		else
 			{
-			statusLabel->setText("<font color='red'>Leider gibt es keine gültige Route zwischen den eingegeben Start- und Zielpunkten.</font>");
+			statusLabel->setText(trUtf8("<font color='red'>Leider gibt es keine gültige Route zwischen den eingegeben Start- und Zielpunkten.</font>"));
 			}
 		}
 	}
@@ -935,7 +936,7 @@ void MainWindow::optionen()
 	{
 	bool *ok = new bool();
 	QInputDialog *dialog = new QInputDialog();
-	int input = dialog->getInt(this, "Neuen Wert eingeben", "Bitte neuen Wert für die Anzahl\nder zu ladenden Kacheln\neingeben:\n(Standard ist 7, wenn das\nProgramm zu langsam ist,\nsollte ein kleinerer Wert\ngewählt werden)", 7, 3, 99, 1, ok);
+	int input = dialog->getInt(this, "Neuen Wert eingeben", trUtf8("Bitte neuen Wert für die Anzahl\nder zu ladenden Kacheln\neingeben:\n(Standard ist 7, wenn das\nProgramm zu langsam ist,\nsollte ein kleinerer Wert\ngewählt werden)"), 7, 3, 99, 1, ok);
 
 	if(*ok)
 		{
